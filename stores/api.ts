@@ -1,10 +1,25 @@
-import { ro } from "@nuxt/ui/runtime/locale/index.js"
-import { type CreateNewRoomResponse, type ClientMessage, type ServerMessage, type FailureResponse, type JoinRoomResponse } from "~/types"
+import { type CreateNewRoomResponse, type ClientMessage, type ServerMessage, type FailureResponse, type JoinRoomResponse, type ConnectResponse } from "~/types"
+import { useStorage } from '@vueuse/core'
 
 // could this be a composable?
 export const useApi = defineStore('api', () => {
 
 	const { $connection } = useNuxtApp()
+
+	const userId = useStorage('userId', crypto.randomUUID())
+
+	function init() {
+		// this should be handled somewhere and set a value to indicate we are connected.
+		wrapRequest<ConnectResponse>({
+			type: 'connectRequest',
+			value: {
+				userId: userId.value,
+				username: 'test'
+			}
+		}, 'connectResponse')
+	}
+
+	init()
 
 	// move to state store
 	const users = ref<string[]>([])

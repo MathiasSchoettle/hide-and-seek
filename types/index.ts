@@ -3,6 +3,7 @@ export type ClientMessage = {
 	id?: string,
 	message: 
 		// requests
+		| { type: 'connectRequest', value: ConnectRequest }
 		| { type: 'createNewRoomRequest', value: CreateNewRoomRequest }
 		| { type: 'joinRoomRequest', value: JoinRoomRequest }
 		// events
@@ -10,8 +11,12 @@ export type ClientMessage = {
 }
 export type ClientPayload = ClientMessage['message']
 
-export type CreateNewRoomRequest = {
+export type ConnectRequest = {
+	userId: string
+	username: string
 }
+
+export type CreateNewRoomRequest = {}
 
 export type JoinRoomRequest = {
 	roomId: string
@@ -26,6 +31,7 @@ export type ServerMessage = {
 	id?: string,
 	message: 
 		// responses
+		| { type: 'connectResponse', value: ConnectResponse }
 		| { type: 'createNewRoomResponse', value: CreateNewRoomResponse }
 		| { type: 'joinRoomResponse', value: JoinRoomResponse }
 		| { type: 'failure', value: FailureResponse }
@@ -33,6 +39,9 @@ export type ServerMessage = {
 		| { type: 'updateStateEvent', value: UpdateStateEvent }
 }
 export type ServerPayload = ServerMessage['message']
+
+export type ConnectResponse = {
+}
 
 export type UpdateStateEvent = {
 	users: string[]

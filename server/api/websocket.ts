@@ -3,9 +3,15 @@ import { FailureReason } from '~/types'
 import { handle } from "../utils/commands"
 
 export default defineWebSocketHandler({
-	open(peer) {},
-	close(peer) {},
-	error(peer) {},
+	open(peer) {
+		console.debug('open')
+	},
+	close(peer, details) {
+		console.log('closing', details)
+	},
+	error(peer) {
+		console.log('error')
+	},
 	async message(peer, message) {
 		const clientMessage: ClientMessage = JSON.parse(message.toString())
 

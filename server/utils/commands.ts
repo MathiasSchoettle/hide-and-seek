@@ -1,8 +1,20 @@
-import { ClientPayload, CreateNewRoomRequest, FailureReason, JoinRoomRequest, LeaveRoomEvent, ServerMessage, ServerPayload } from "~/types";
+import { ClientPayload, ConnectRequest, CreateNewRoomRequest, FailureReason, JoinRoomRequest, LeaveRoomEvent, ServerMessage, ServerPayload } from "~/types";
 import { Peer } from 'crossws'
 
 interface MessageHandler<T> {
 	handle(message: T, peer: Peer): Promise<ServerPayload | undefined>;
+}
+
+class ConnectRequestHandler implements MessageHandler<CreateNewRoomRequest> {
+	async handle(message: ConnectRequest, peer: Peer): Promise<ServerPayload> {
+		
+		// TODO do something
+
+		return {
+			type: 'connectResponse',
+			value: {}
+		}
+	}
 }
 
 class CreateNewRoomHandler implements MessageHandler<CreateNewRoomRequest> {
@@ -80,7 +92,7 @@ class LeaveRoomEventHandler implements MessageHandler<LeaveRoomEvent> {
 const commandRegistry: {
 	[K in ClientPayload as K['type']]: MessageHandler<K['value']>
 } = {
-	// not really type safe, oh well...
+	connectRequest: new ConnectRequestHandler(),
 	createNewRoomRequest: new CreateNewRoomHandler(),
 	joinRoomRequest: new JoinRoomHandler(),
 	leaveRoomEvent: new LeaveRoomEventHandler(),
