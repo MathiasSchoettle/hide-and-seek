@@ -1,5 +1,6 @@
 import { highlight } from '@nuxt/ui/runtime/utils/fuse.js';
 import { Peer } from 'crossws'
+import { JoinRoomStatus } from '~/types';
 
 type User = {
     id: string,
@@ -29,6 +30,8 @@ enum RoomStatus {
     PLAYING = "playing",
 }
 
+const MAX_ROOM_SIZE = 10;
+
 type Room = {
     id: string,
     status: RoomStatus,
@@ -36,20 +39,13 @@ type Room = {
     userIds: string[],
 }
 
-class Rooms {
-    rooms: Room[];
-    constructor() {
-        this.rooms = []
-    }
-}
-
 type UserState =
     | { isInRoom: false }
     | { isInRoom: true, room: Room }
 
-class State {
-    users: User[];
-    rooms: Room[];
+export class State {
+    private users: User[];
+    private rooms: Room[];
     constructor() {
         this.rooms = [];
         this.users = [];
@@ -129,19 +125,23 @@ class State {
         return room;
     }
 
-    joinRoom(peerId: string, roomId: string) {
+    joinRoom(peerId: string, roomId: string): JoinRoomStatus {
         const user = this.getUserByPeerId(peerId);
         if (user === undefined) {
-            return;
+            return JoinRoomStatus.ROOM_DOES_NOT_EXIST;
         }
         if (this.getRoomByUserId(user.id) !== undefined) {
-            return;
+            return JoinRoomStatus.ALREADY_IN_ROOM;
         }
         const room = this.rooms.find(r => r.id === roomId);
         if (room === undefined) {
-            return;
+            return JoinRoomStatus.ROOM_DOES_NOT_EXIST;
+        }
+        if (room.userIds.length >= MAX_ROOM_SIZE) {
+            return JoinRoomStatus.ROOM_FULL;
         }
         room.userIds.push(user.id);
+        return JoinRoomStatus.SUCCESS;
     }
 
     leaveRoom(peerId: string) {
@@ -176,3 +176,5 @@ class State {
         this.rooms.splice(index, 1);
     }
 }
+
+export const state = new State();
