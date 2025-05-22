@@ -1,13 +1,14 @@
 // type for all allowed messages from client to server
 export type ClientMessage = {
 	id?: string,
-	message: 
-		// requests
-		| { type: 'connectRequest', value: ConnectRequest }
-		| { type: 'createNewRoomRequest', value: CreateNewRoomRequest }
-		| { type: 'joinRoomRequest', value: JoinRoomRequest }
-		// events
-		| { type: 'leaveRoomEvent', value: LeaveRoomEvent }
+	message:
+	// requests
+	| { type: 'connectRequest', value: ConnectRequest }
+	| { type: 'createRoomRequest', value: {} }
+	| { type: 'joinRoomRequest', value: JoinRoomRequest }
+	// events
+	| { type: 'leaveRoomEvent', value: {} }
+	| { type: 'closeRoomEvent', value: {} }
 }
 export type ClientPayload = ClientMessage['message']
 
@@ -22,46 +23,27 @@ export type JoinRoomRequest = {
 	roomId: string
 }
 
-export type LeaveRoomEvent = {
-	roomId: string
-}
-
 // type for all allowed messages from server to client
 export type ServerMessage = {
 	id?: string,
-	message: 
-		// responses
-		| { type: 'connectResponse', value: ConnectResponse }
-		| { type: 'createNewRoomResponse', value: CreateNewRoomResponse }
-		| { type: 'joinRoomResponse', value: JoinRoomResponse }
-		| { type: 'failure', value: FailureResponse }
-		// events
-		| { type: 'updateStateEvent', value: UpdateStateEvent }
+	message:
+	// responses
+	| { type: 'connectResponse', value: {} }
+	| { type: 'createRoomResponse', value: {} }
+	| { type: 'joinRoomResponse', value: JoinRoomResponse }
+	// events
+	| { type: 'updateStateEvent' }
 }
+
 export type ServerPayload = ServerMessage['message']
 
-export type ConnectResponse = {
-}
-
-export type UpdateStateEvent = {
-	users: string[]
-}
-
-export type CreateNewRoomResponse = {
-	roomId: string
+export enum JoinRoomStatus {
+	SUCCESS = "success",
+	ROOM_DOES_NOT_EXIST = "room_id_not_found",
+	ROOM_FULL = "room_full",
 }
 
 export type JoinRoomResponse = {
-	roomId: string
-}
-
-export type FailureResponse = {
-	reason: FailureReason
-}
-
-export enum FailureReason {
-	ALREADY_IN_ROOM = 'Already in room',
-	ROOM_DOES_NOT_EXIST = 'Room does not exist',
-	INTERNAL_SERVER_ERROR = 'Internal Server error'
+	status: JoinRoomStatus,
 }
 
