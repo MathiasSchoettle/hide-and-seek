@@ -39,9 +39,9 @@ type Room = {
     userIds: string[],
 }
 
-export type UserState =
-    | { isInRoom: false }
-    | { isInRoom: true, room: Room }
+export type UserState = {
+    room?: Room
+};
 
 export class State {
     private users: User[];
@@ -111,10 +111,9 @@ export class State {
     getUserState(user: User): UserState {
         const room = this.getRoomByUserId(user.id);
         if (room === undefined) {
-            return { isInRoom: false };
+            return { room: undefined };
         }
         return {
-            isInRoom: true,
             room,
         }
     }
