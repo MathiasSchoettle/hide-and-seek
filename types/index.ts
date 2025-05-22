@@ -51,6 +51,7 @@ export type JoinRoomResponse = {
 export enum JoinRoomStatus {
 	SUCCESS = "success",
 	ROOM_DOES_NOT_EXIST = "room_id_not_found",
+	ALREADY_IN_ROOM = "already_in_room",
 	ROOM_FULL = "room_full",
 }
 
