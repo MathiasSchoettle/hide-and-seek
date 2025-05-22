@@ -1,3 +1,5 @@
+import type { UserState } from "~/server/utils/state"
+
 // type for all allowed messages from client to server
 export type ClientMessage = {
 	id?: string,
@@ -56,5 +58,5 @@ export enum JoinRoomStatus {
 }
 
 export type UpdateStateEvent = {
-
+	state: UserState,
 }

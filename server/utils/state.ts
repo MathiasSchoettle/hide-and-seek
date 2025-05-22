@@ -39,7 +39,7 @@ type Room = {
     userIds: string[],
 }
 
-type UserState =
+export type UserState =
     | { isInRoom: false }
     | { isInRoom: true, room: Room }
 
@@ -99,7 +99,7 @@ export class State {
                 const event: ServerMessage = {
                     message: {
                         type: 'updateStateEvent',
-                        value: state,
+                        value: { state },
                     }
                 }
                 const stateMessage = JSON.stringify(event)
