@@ -1,4 +1,4 @@
-import { ClientPayload, ConnectRequest, CreateNewRoomRequest, FailureReason, JoinRoomRequest, LeaveRoomEvent, ServerMessage, ServerPayload } from "~/types";
+import { ClientPayload, MoinRequest, JoinRoomRequest, LeaveRoomEvent, ServerMessage, ServerPayload } from "~/types";
 import { Peer } from 'crossws'
 
 interface MessageHandler<T> {
@@ -6,7 +6,7 @@ interface MessageHandler<T> {
 }
 
 class ConnectRequestHandler implements MessageHandler<CreateNewRoomRequest> {
-	async handle(message: ConnectRequest, peer: Peer): Promise<ServerPayload> {
+	async handle(message: MoinRequest, peer: Peer): Promise<ServerPayload> {
 		
 		// TODO do something
 

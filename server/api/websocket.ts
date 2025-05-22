@@ -1,5 +1,4 @@
-import type { ClientMessage, ServerPayload } from "~/types"
-import { FailureReason } from '~/types'
+import type { ClientMessage } from "~/types"
 import { handle } from "../utils/commands"
 
 export default defineWebSocketHandler({
@@ -15,16 +14,7 @@ export default defineWebSocketHandler({
 	async message(peer, message) {
 		const clientMessage: ClientMessage = JSON.parse(message.toString())
 
-		const response = await handle(clientMessage.message, peer)
-			.then(message => message)
-			.catch(() => {
-				return {
-					type: 'failure',
-					value: { 
-						reason: FailureReason.INTERNAL_SERVER_ERROR 
-					}
-				} as ServerPayload
-			})
+		const response = await handle(clientMessage.message, peer).then(message => message)
 
 		if (response) {
 			peer.send(JSON.stringify({
