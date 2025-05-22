@@ -23,12 +23,6 @@ export default defineNuxtConfig({
 		strict: true
 	},
 
-	routeRules: {
-		'/': {
-			redirect: '/join'
-		}
-	},
-	
 	ui: {
 		prefix: 'Ui'
 	},

@@ -1,6 +1,4 @@
-import { type CreateNewRoomResponse, type ClientMessage, type ServerMessage, type FailureResponse, type JoinRoomResponse, type ConnectResponse } from "~/types"
-import { useStorage } from '@vueuse/core'
-import {v4 as uuidv4} from 'uuid';
+import type { ClientMessage, CreateRoomResponse, JoinRoomResponse, MoinMoinResponse, ServerMessage } from "~/types"
 
 
 // could this be a composable?
@@ -8,33 +6,11 @@ export const useApi = defineStore('api', () => {
 
 	const { $connection } = useNuxtApp()
 
-	const userId = useStorage('userId', uuidv4())
-
-	function init() {
-		// this should be handled somewhere and set a value to indicate we are connected.
-		wrapRequest<ConnectResponse>({
-			type: 'connectRequest',
-			value: {
-				userId: userId.value,
-				username: 'test'
-			}
-		}, 'connectResponse')
-	}
-
-	init()
-
-	// move to state store
-	const users = ref<string[]>([])
-
 	watchSyncEffect(() => {
 		const message = $connection.lastMessage
 
-		console.debug(message)
-
 		switch(message.value?.message.type) {
-			case 'updateStateEvent':
-				users.value = message.value.message.value.users
-				break
+			// todo handle messages
 		}
 	})
 
@@ -44,8 +20,6 @@ export const useApi = defineStore('api', () => {
 			.then((response: ServerMessage) => {
 				if (response.message.type === expectedType) {
 					resolve(response.message.value as T)
-				} else if (response.message.type === 'failure') {
-					reject(response.message.value as FailureResponse)
 				}
 
 				reject(new Error(`Unexpected Response: ${JSON.stringify(response)}`))
@@ -56,11 +30,21 @@ export const useApi = defineStore('api', () => {
 		})
 	}
 
-	function createNewRoom(): Promise<CreateNewRoomResponse> {
-		return wrapRequest<CreateNewRoomResponse>({
-			type: 'createNewRoomRequest',
+	function sayMoin(userId: string, username: string): Promise<MoinMoinResponse> {
+		return wrapRequest<MoinMoinResponse>({
+			type: 'moinRequest',
+			value: {
+				userId: userId,
+				username: username
+			}
+		}, 'moinMoinResponse')
+	}
+
+	function createNewRoom(): Promise<CreateRoomResponse> {
+		return wrapRequest<CreateRoomResponse>({
+			type: 'createRoomRequest',
 			value: {}
-		}, 'createNewRoomResponse')
+		}, 'createRoomResponse')
 	}
 
 	function joinRoom(roomId: string): Promise<JoinRoomResponse> {
@@ -72,22 +56,29 @@ export const useApi = defineStore('api', () => {
 		}, 'joinRoomResponse')
 	}
 
-	function leaveRoom(roomId: string) {
+	function leaveRoom() {
 		$connection.sendEvent({
 			message: {
 				type: 'leaveRoomEvent',
-				value: {
-					roomId: roomId
-				}
+				value: {}
+			}
+		})
+	}
+
+	function closeRoom() {
+		$connection.sendEvent({
+			message: {
+				type: 'closeRoomEvent',
+				value: {}
 			}
 		})
 	}
 
 	return {
+		sayMoin,
 		createNewRoom,
 		joinRoom,
 		leaveRoom,
-
-		users
+		closeRoom,
 	}
 })

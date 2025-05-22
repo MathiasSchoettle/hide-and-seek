@@ -7,7 +7,6 @@ export default defineNuxtPlugin(() => {
 	const { host } = useRequestURL()
 	const { status, data, send, open } = useWebSocket(`ws://${host}/api/websocket`)
 
-
 	let nextId: bigint = 0n
 
 	const lastMessage = ref<ServerMessage>()
