@@ -1,6 +1,6 @@
 import { highlight } from '@nuxt/ui/runtime/utils/fuse.js';
 import { Peer } from 'crossws'
-import { JoinRoomStatus } from '~/types';
+import { JoinRoomStatus, ServerMessage } from '~/types';
 
 type User = {
     id: string,
@@ -92,11 +92,23 @@ export class State {
         user.peer = undefined;
     }
 
-    getUserStateForPeerId(peerId: string): UserState | undefined {
-        const user = this.getUserByPeerId(peerId);
-        if (user === undefined) {
-            return undefined;
+    publishUserState() {
+        for (const user of this.users) {
+            if (user.peer !== undefined) {
+                const state = this.getUserState(user);
+                const event: ServerMessage = {
+                    message: {
+                        type: 'updateStateEvent',
+                        value: state,
+                    }
+                }
+                const stateMessage = JSON.stringify(event)
+                user.peer.send(stateMessage);
+            }
         }
+    }
+
+    getUserState(user: User): UserState {
         const room = this.getRoomByUserId(user.id);
         if (room === undefined) {
             return { isInRoom: false };
