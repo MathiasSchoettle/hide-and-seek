@@ -3,7 +3,7 @@ export type ClientMessage = {
 	id?: string,
 	message:
 	// requests
-	| { type: 'connectRequest', value: ConnectRequest }
+	| { type: 'moinRequest', value: MoinRequest }
 	| { type: 'createRoomRequest', value: CreateRoomRequest }
 	| { type: 'joinRoomRequest', value: JoinRoomRequest }
 	// events
@@ -12,7 +12,7 @@ export type ClientMessage = {
 }
 export type ClientPayload = ClientMessage['message']
 
-export type ConnectRequest = {
+export type MoinRequest = {
 	userId: string
 	username: string
 }
@@ -32,7 +32,7 @@ export type ServerMessage = {
 	id?: string,
 	message:
 	// responses
-	| { type: 'connectResponse', value: ConnectResponse }
+	| { type: 'moinMoinResponse', value: MoinMoinResponse }
 	| { type: 'createRoomResponse', value: CreateRoomResponse }
 	| { type: 'joinRoomResponse', value: JoinRoomResponse }
 	// events
@@ -40,7 +40,7 @@ export type ServerMessage = {
 }
 export type ServerPayload = ServerMessage['message']
 
-export type ConnectResponse = {}
+export type MoinMoinResponse = {}
 
 export type CreateRoomResponse = {}
 
