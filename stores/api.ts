@@ -13,7 +13,8 @@ export const useApi = defineStore('api', () => {
 
 		switch(message.value?.message.type) {
 			case 'updateStateEvent':
-				console.debug(message.value.message.value)
+				console.debug(message.value.message.value.state)
+				stateStore.roomId = message.value.message.value.state.room?.id
 				break
 		}
 	})
