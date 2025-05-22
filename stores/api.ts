@@ -1,12 +1,14 @@
 import { type CreateNewRoomResponse, type ClientMessage, type ServerMessage, type FailureResponse, type JoinRoomResponse, type ConnectResponse } from "~/types"
 import { useStorage } from '@vueuse/core'
+import {v4 as uuidv4} from 'uuid';
+
 
 // could this be a composable?
 export const useApi = defineStore('api', () => {
 
 	const { $connection } = useNuxtApp()
 
-	const userId = useStorage('userId', crypto.randomUUID())
+	const userId = useStorage('userId', uuidv4())
 
 	function init() {
 		// this should be handled somewhere and set a value to indicate we are connected.
