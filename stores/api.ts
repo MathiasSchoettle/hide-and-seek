@@ -6,11 +6,15 @@ export const useApi = defineStore('api', () => {
 
 	const { $connection } = useNuxtApp()
 
+	const stateStore = useStateStore()
+
 	watchSyncEffect(() => {
 		const message = $connection.lastMessage
 
 		switch(message.value?.message.type) {
-			// todo handle messages
+			case 'updateStateEvent':
+				console.debug(message.value.message.value)
+				break
 		}
 	})
 
