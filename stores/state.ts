@@ -76,6 +76,8 @@ export const useStateStore = defineStore('state', () => {
 		last: Date
 	}>()
 
+	const isLeader = computed(() => api.userState?.room?.ownerId === userId.value)
+	
 	return {
 		username,
 		userId,
@@ -88,6 +90,7 @@ export const useStateStore = defineStore('state', () => {
 		seekerPositions,
 		hiderPosition,
 		geo,
+		isLeader,
 	}
 })
 

@@ -14,7 +14,7 @@ type Compass = {
 
 const MAX_ROOM_SIZE = 10;
 const HIDING_DURATION = 15 * 60 * 1000;
-const MAX_HIDER_FOUND_DURATION = 5 * 60 * 1000;
+const MAX_HIDER_FOUND_DURATION = 0.5 * 60 * 1000;
 
 type Room = {
     id: string,
