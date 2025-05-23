@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui';
+import { MapCircleType, type MapCircle, getMapCircleRadius } from '~/server/utils/state'
 
 const stateStore = useStateStore()
 
@@ -24,6 +25,7 @@ const items: TabsItem[] = [
 			<Map
 				v-show="index === '0'"
 				:is-hider="stateStore.isHider" :seekers="stateStore.seekerPositions" :hider="stateStore.hiderPosition"
+				:circles="stateStore.mapCircles"
 			/>
 
 			<div class="w-full h-full" v-show="index === '1'">

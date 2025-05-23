@@ -94,6 +94,8 @@ export const useStateStore = defineStore('state', () => {
 
 	const isLeader = computed(() => api.userState?.room?.ownerId === userId.value)
 
+	const mapCircles = computed(() => api.userState?.room?.mapCircles ?? []);
+
 	return {
 		username,
 		userId,
@@ -108,6 +110,7 @@ export const useStateStore = defineStore('state', () => {
 		geo,
 		coinCount,
 		isLeader,
+		mapCircles,
 	}
 })
 
