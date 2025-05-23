@@ -8,6 +8,18 @@ export const useStateStore = defineStore('state', () => {
 	const userId = useLocalStorage('userId', uuidv4())
 
 	const roomId = ref()
+	const users = ref<string[]>([])
+
+	const receivingUpdates = ref(false)
+
+	until(api.userState)
+		.not.toBe(undefined)
+		.then(() => receivingUpdates.value = true)
+
+	watch(() => api.userState, (state) => {
+		roomId.value = state?.room?.id
+		users.value = state?.room?.userIds ?? []
+	})
 
 	until(username).toBeTruthy().then(() => {
 		console.debug('CONNECTED')

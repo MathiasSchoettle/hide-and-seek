@@ -33,7 +33,7 @@ function join() {
 	joinError.value = ''
 	createError.value = ''
 
-	api.joinRoom(state.value.pin.join())
+	api.joinRoom(state.value.pin.join(''))
 		.then((response) => {
 			switch(response.status) {
 				case JoinRoomStatus.SUCCESS: 

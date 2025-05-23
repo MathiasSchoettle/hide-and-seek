@@ -110,12 +110,7 @@ export class State {
 
     getUserState(user: User): UserState {
         const room = this.getRoomByUserId(user.id);
-        if (room === undefined) {
-            return { room: undefined };
-        }
-        return {
-            room,
-        }
+        return { room }
     }
 
     createRoom(peerId: string) {
@@ -133,7 +128,7 @@ export class State {
             userIds: [user.id],
             status: RoomStatus.LOBBY,
         }
-        return room;
+        this.rooms.push(room)
     }
 
     joinRoom(peerId: string, roomId: string): JoinRoomStatus {

@@ -1,20 +1,18 @@
 import type { ClientMessage, CreateRoomResponse, JoinRoomResponse, MoinMoinResponse, ServerMessage } from "~/types"
 
-
 // could this be a composable?
 export const useApi = defineStore('api', () => {
 
 	const { $connection } = useNuxtApp()
 
-	const stateStore = useStateStore()
+	const userState = ref<UserState>()
 
 	watchSyncEffect(() => {
 		const message = $connection.lastMessage
 
 		switch(message.value?.message.type) {
 			case 'updateStateEvent':
-				console.debug(message.value.message.value.state)
-				stateStore.roomId = message.value.message.value.state.room?.id
+				userState.value = message.value.message.value.state
 				break
 		}
 	})
@@ -85,5 +83,7 @@ export const useApi = defineStore('api', () => {
 		joinRoom,
 		leaveRoom,
 		closeRoom,
+
+		userState
 	}
 })
