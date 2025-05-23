@@ -27,15 +27,6 @@ const skipDisabled = computed(() => stateStore.coinCount >= SKIP_QUESTION_COST)
 
 const textinput = ref('')
 
-function handleSend() {
-	textinput.value = ''
-	// todo  send
-}
-
-function handleSkip() {
-	console.log('skip')
-	// handle skip
-}
 
 </script>
 
@@ -46,7 +37,7 @@ function handleSkip() {
 
 				<template v-for="(question, index) in temp" :key="index">
 					<div class="p-2 rounded-md max-w-3/5 flex flex-col bg-neutral-700 mr-auto">
-						{{ question.question }}
+						{{ question.answer }}
 					</div>
 
 					<div class="ml-auto" v-if="question.answer === undefined">
@@ -65,8 +56,7 @@ function handleSkip() {
 		</div>
 
 		<div class="w-full flex gap-4">
-			<UiInput v-model="textinput" :disabled="sendDisabled" size="xl" :ui="{ root: 'grow' }" type="text"/>
-			<UiButton @click="handleSend" :disabled="sendDisabled" :ui="{ base: 'px-5', trailingIcon: 'text-4xl' }" size="sm" trailing-icon="i-lucide-send-horizontal"></UiButton>
+
 		</div>
 	</div>
 </template>

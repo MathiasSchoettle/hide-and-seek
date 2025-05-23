@@ -24,10 +24,10 @@ onMounted(() => {
 	]
 })
 
-const messages = ref()
-
 const sendDisabled = computed(() => temp.value?.at(-1)?.answer !== undefined )
 const skipDisabled = computed(() => stateStore.coinCount >= SKIP_QUESTION_COST)
+
+const textinput = ref('')
 
 function handleSend() {
 	textinput.value = ''
