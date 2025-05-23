@@ -14,6 +14,7 @@ type Compass = {
 
 const MAX_ROOM_SIZE = 10;
 const HIDING_DURATION = 15 * 60 * 1000;
+const MAX_HIDER_FOUND_DURATION = 5 * 60 * 1000;
 
 type Room = {
     id: string,
@@ -24,7 +25,32 @@ type Room = {
     positions: Record<string, Position>
     hidingTimeEnd?: number,
     hiderFoundTime?: number,
+    questions: Question[],
 }
+
+type Question = {
+    question: string,
+    answer?: string,
+}
+
+export const questions = [
+    "Is your latitude higher or lower than mine?",
+    "Is your longitude higher or lower than mine?",
+    "Describe a building in your line of sight",
+    "What is the color of the closest building to you",
+    "What is the most dominant sound in your area?",
+    "How long would it take to walk to the nearest bus or train station?",
+    "Are you indoors?",
+    "Are you on the main campus?",
+    "Are on ground level",
+    "Can you see a minimum of 5 trees from where you are?",
+    "Are you near water?",
+    "Do you have a strong Wifi signal?",
+    "Are you likely to be interrupted or seen where you are?",
+    "Are there flyers or posters on the walls near you?",
+    "If I yelled your name right now, would you hear me?",
+    "Can I get to your location without using stairs?",
+]
 
 export enum GamePhase {
     LOBBY = "lobby",
@@ -82,6 +108,11 @@ export class State {
             }
         }
         return mapping;
+    }
+
+    private removeRoom(room: Room) {
+        const index = this.rooms.findIndex(r => r === room);
+        this.rooms.splice(index, 1);
     }
 
     connectUser(id: string, name: string, peer: Peer): void {
@@ -214,6 +245,7 @@ export class State {
             hiderId: user.id,
             gamePhase: GamePhase.LOBBY,
             positions: {},
+            questions: [],
         }
         this.rooms.push(room)
     }
@@ -265,8 +297,7 @@ export class State {
         if (room.ownerId !== user.id) {
             return;
         }
-        const index = this.rooms.findIndex(r => r === room);
-        this.rooms.splice(index, 1);
+        this.removeRoom(room);
     }
 
     updatePosition(peerId: string, position: Position) {
@@ -338,15 +369,20 @@ export class State {
     updateTimers() {
         const now = Date.now();
         for (const room of this.rooms) {
-            if (room.gamePhase !== GamePhase.HIDING) {
-                continue;
-            }
-            if (room.hidingTimeEnd === undefined) {
-                throw Error("Unreachble state: game phase hiding but no timer")
-            }
-
-            if (now > room.hidingTimeEnd) {
-                room.gamePhase = GamePhase.SEEKING;
+            if (room.gamePhase === GamePhase.HIDING) {
+                if (room.hidingTimeEnd === undefined) {
+                    throw Error("Unreachable state: game phase hiding but no timer")
+                }
+                if (now > room.hidingTimeEnd) {
+                    room.gamePhase = GamePhase.SEEKING;
+                }
+            } else if (room.gamePhase === GamePhase.HIDER_FOUND) {
+                if (room.hiderFoundTime === undefined) {
+                    throw Error("Unreachable state: game phase HIDER_FOUND but no found time")
+                }
+                if (now > room.hiderFoundTime + MAX_HIDER_FOUND_DURATION) {
+                    this.removeRoom(room);
+                }
             }
         }
     }
@@ -358,9 +394,6 @@ export class State {
         }
 
         const room = this.getRoomByUserId(user.id);
-        if (room === undefined) {
-            return;
-        }
 
         // only the hider is allowed to do this and only if the game phase is SEEKING
         if (room === undefined || room.hiderId !== user.id || room.gamePhase !== GamePhase.SEEKING) {
@@ -369,6 +402,64 @@ export class State {
 
         room.gamePhase = GamePhase.HIDER_FOUND;
         room.hiderFoundTime = Date.now();
+    }
+
+    askQuestion(peerId: string, question: string) {
+        const user = this.getUserByPeerId(peerId);
+        if (user === undefined) {
+            return;
+        }
+        const room = this.getRoomByUserId(user.id);
+
+        // only seekers can do this and only in seeking phase
+        if (room === undefined || room.hiderId === user.id || room.gamePhase !== GamePhase.SEEKING) {
+            console.error(`User ${user.id} cannot perform "askQuestion" in room ${JSON.stringify(room)}`)
+            return;
+        }
+
+        if (!questions.includes(question)) {
+            console.error(`invalid question "${question}"`);
+            return;
+        }
+
+        if (room.questions.find(q => q.question === question) !== undefined) {
+            console.error(`Question "${question}" has already been asked`);
+            return;
+        }
+
+        if (room.questions.find(q => q.answer === undefined) !== undefined) {
+            console.error(`You have to wait for the answer to the previous question before asking another one`);
+            return;
+        }
+
+        room.questions.push({ question, answer: undefined });
+    }
+
+    answerQuestion(peerId: string, question: string, answer: string) {
+        const user = this.getUserByPeerId(peerId);
+        if (user === undefined) {
+            return;
+        }
+        const room = this.getRoomByUserId(user.id);
+
+        // only hiders can do this and only in seeking phase
+        if (room === undefined || room.hiderId !== user.id || room.gamePhase !== GamePhase.SEEKING) {
+            console.error(`User ${user.id} cannot perform "askQuestion" in room ${JSON.stringify(room)}`)
+            return;
+        }
+
+        const roomQuestion = room.questions.find(q => q.question === question);
+        if (roomQuestion === undefined) {
+            console.error(`Question "${question}" does not exist`);
+            return;
+        }
+
+        if (roomQuestion.answer !== undefined) {
+            console.error(`Question "${question}" has already been answered`);
+            return;
+        }
+
+        roomQuestion.answer = answer;
     }
 }
 
