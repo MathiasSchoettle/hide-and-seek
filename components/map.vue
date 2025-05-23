@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { MapCircleType, type MapCircle } from '~/server/utils/state';
-	
+import { MapCircleType, type MapCircle, getMapCircleCost } from '~/server/utils/state';
+import { getDistance } from 'geolib'
+
 const store = useStateStore();
 const api = useApi();
 
@@ -20,19 +21,28 @@ const showModal = ref<boolean>(false);
 
 const center: [number, number] = [props.hider.lat, props.hider.lng]
 
-const circleColors: Record<MapCircleType, string> = {
-	[MapCircleType.SMOKE_BOMB]: "grey",
-	[MapCircleType.FREEZE_BOMB]: "#42b3f5",
-	[MapCircleType.SEEKERS_FORTUNE]: "gold",
-}
-
-const circleButtonContents: [MapCircleType, string][] = [
-	[MapCircleType.SMOKE_BOMB, "Smoke bomb"],
-	[MapCircleType.FREEZE_BOMB, "Freeze bomb"],
-	[MapCircleType.SEEKERS_FORTUNE, "Seekers fortune"],
+const circleButtonContents = [
+	{
+		type: MapCircleType.SMOKE_BOMB,
+		name: "Smoke bomb",
+		color: "grey"
+	},
+	{
+		type: MapCircleType.FREEZE_BOMB,
+		name: "Freeze bomb",
+		color: "#f2b3f5",
+	},
+	{
+		type: MapCircleType.SEEKERS_FORTUNE,
+		name: "Seekers fortune",
+		color: "gold"
+	}
 ]
 
 const handleClick = (evt: any) => {
+
+	if (!store.isHider) return
+
 	console.log(props.circles);
 	console.log(evt);
 	const latLng = evt.latlng;
@@ -49,9 +59,34 @@ const addCircle = (type: MapCircleType, position: Position) => {
 	showModal.value = false;
 }
 
+const shouldHideTeammates = computed(() => {
+
+	if (store.isHider) return false
+
+	const circles = api.userState?.room?.mapCircles;
+
+	const inCircle = circles?.filter(c => c.type === 'smoke_bomb')
+		.some(c => {
+			const circlePosition = {	
+				lat: c.position.lat,
+				lon: c.position.long,
+			}
+			const userPosition = {
+				lat: store.geo?.lat ?? 0,
+				lon: store.geo?.lon ?? 0,
+			}
+
+			console.debug(circlePosition, userPosition)
+			return getDistance(circlePosition, userPosition) < c.radius
+		})
+
+	return !!inCircle
+})
+
 </script>
 
 <template>
+	{{ shouldHideTeammates }}
 	<div class="h-full w-full">
 		<LMap
 			class="h-screen w-full"
@@ -70,23 +105,27 @@ const addCircle = (type: MapCircleType, position: Position) => {
 			<LCircleMarker v-if="isHider" :lat-lng="hider" :radius="10" color="red">
 				<LTooltip>{{ hider.name }}</LTooltip>
 			</LCircleMarker>
-			<LCircleMarker v-for="seeker in seekers" :lat-lng="seeker" :radius="10" color="blue">
+
+			<LCircleMarker v-if="!shouldHideTeammates" v-for="seeker in seekers" :lat-lng="seeker" :radius="10" :color="seeker.name === store.username ? 'green' : 'blue'">
 				<LTooltip>{{ seeker.name }}</LTooltip>
 			</LCircleMarker>
+
 			<LCircle
 				v-for="circle in circles"
 				:lat-lng="{lat: circle.position.lat, lng: circle.position.long}"
 				:radius="circle.radius"
 				:stroke="false"
-				:fill-color="circleColors[circle.type]"
+				:fill-color="circleButtonContents.find(b => b.type === circle.type)?.color"
 				:fill-opacity="0.6"
 			/>
 		</LMap>
 		<UiModal v-model:open="showModal" title="Choose spell">
-			<template #body>
-				<UiButton v-if="position !== undefined" v-for="button in circleButtonContents" @click="addCircle(button[0], position)">
-					{{button[1]}}
-				</UiButton>
+			<template #body v-if="position !== undefined">
+				<div class="flex flex-col gap-2 w-full">
+					<UiButton :disabled="store.coinCount < getMapCircleCost(button.type)" variant="outline" color="neutral" v-for="button in circleButtonContents" @click="addCircle(button.type, position)">
+						{{ button.name }}
+					</UiButton>
+				</div>
 			</template>
 		</UiModal>
 	</div>

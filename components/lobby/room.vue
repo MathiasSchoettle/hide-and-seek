@@ -21,13 +21,14 @@ function handleSetHider(id: string) {
 }
 
 const preventStart = computed(() => props.users.length < 2)
+const { copy, isSupported } = useClipboard()
 
 </script>
 
 <template>
 	<div class="flex flex-col gap-5 w-max-screen w-[400px] items-center">
 		<div class="flex gap-4 items-center">
-			<span class="text-xl font-mono">Welcome to room <b>'{{ roomId }}'</b></span>
+			<span class="text-xl font-mono">Welcome to room <b class="cursor-pointer" @click="copy(roomId)">'{{ roomId }}'</b></span>
 			<UiButton v-if="isLeader" @click="$emit('close')" class="cursor-pointer font-bold" size="lg" color="error" variant="outline">Close Game</UiButton>
 			<UiButton v-else @click="$emit('leave')" class="cursor-pointer font-bold" size="lg" color="error" variant="outline">Leave Game</UiButton>
 		</div>
