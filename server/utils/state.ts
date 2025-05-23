@@ -84,12 +84,20 @@ export enum MapCircleType {
     FREEZE_BOMB = "freeze_bomb",
 }
 
-const getMapCircleDuration = (type: MapCircleType) => {
+export const getMapCircleDuration = (type: MapCircleType) => {
     return 5 * 60 * 1000;
 }
 
-const getMapCircleRadius = (type: MapCircleType) => {
+export const getMapCircleRadius = (type: MapCircleType) => {
     return 100; // meters
+}
+export const getMapCircleCost = (type: MapCircleType) => {
+    switch (type) {
+        case MapCircleType.SMOKE_BOMB:
+            return 30;
+        case MapCircleType.FREEZE_BOMB:
+            return 25;
+    }
 }
 
 export type MapCircle = {
@@ -548,6 +556,13 @@ export class State {
             return;
         }
 
+        const cost = getMapCircleCost(type);
+
+        if (room.nHiderCoins < cost) {
+            console.error("Not enough coins to add circle " + type);
+            return;
+        }
+
         const circle: MapCircle = {
             type,
             position,
@@ -556,6 +571,7 @@ export class State {
         }
 
         room.mapCircles.push(circle);
+        room.nHiderCoins -= cost;
     }
 }
 
