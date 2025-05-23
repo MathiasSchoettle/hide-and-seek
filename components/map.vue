@@ -12,6 +12,8 @@ const map = ref(null)
 
 const center = ref<[number, number]>([props.hider_location.lat, props.hider_location.lng])
 const zoom = 16
+const seeker_icon = { url: "https://www.lfdr.de/People/Alumni/pia_eichinger.jpg", size: [45, 70] }
+const hider_icon = { url: "https://www.lfdr.de/People/schmidbauer/schmidbauer.jpg", size: [50, 70] }
 
 const seekerPosition = ref<[number, number]>([props.seeker_location.lat, props.seeker_location.lng])
 const hiderPosition = ref<[number, number]>([props.hider_location.lat, props.hider_location.lng])
@@ -47,10 +49,12 @@ const onMapClick = (event: any) => {
 			attribution="&copy; <a href='https://www.openstreetmap.org/'>OpenStreetMap</a> contributors" />
 
 		<LMarker :lat-lng="seekerPosition">
+			<LIcon :icon-url="seeker_icon.url" :icon-size="seeker_icon.size" />
 			<LPopup>Seeker</LPopup>
 		</LMarker>
 
 		<LMarker :lat-lng="hiderPosition">
+			<LIcon :icon-url="hider_icon.url" :icon-size="hider_icon.size" />
 			<LPopup>Hider</LPopup>
 		</LMarker>
 	</LMap>
