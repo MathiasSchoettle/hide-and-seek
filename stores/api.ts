@@ -1,3 +1,4 @@
+import type { QuestionString } from "~/server/utils/state"
 import type { ClientMessage, CreateRoomResponse, JoinRoomResponse, MoinMoinResponse, ServerMessage } from "~/types"
 
 // could this be a composable?
@@ -10,7 +11,7 @@ export const useApi = defineStore('api', () => {
 	watchSyncEffect(() => {
 		const message = $connection.lastMessage
 
-		switch(message.value?.message.type) {
+		switch (message.value?.message.type) {
 			case 'updateStateEvent':
 				userState.value = message.value.message.value.state
 				break
@@ -20,16 +21,16 @@ export const useApi = defineStore('api', () => {
 	function wrapRequest<T>(request: ClientMessage['message'], expectedType: ServerMessage['message']['type']) {
 		return new Promise<T>((resolve, reject) => {
 			$connection.sendRequest({ message: request })
-			.then((response: ServerMessage) => {
-				if (response.message.type === expectedType) {
-					resolve(response.message.value as T)
-				}
+				.then((response: ServerMessage) => {
+					if (response.message.type === expectedType) {
+						resolve(response.message.value as T)
+					}
 
-				reject(new Error(`Unexpected Response: ${JSON.stringify(response)}`))
-			})
-			.catch(error => {
-				reject(error)
-			})
+					reject(new Error(`Unexpected Response: ${JSON.stringify(response)}`))
+				})
+				.catch(error => {
+					reject(error)
+				})
 		})
 	}
 
@@ -57,6 +58,29 @@ export const useApi = defineStore('api', () => {
 				roomId: roomId
 			}
 		}, 'joinRoomResponse')
+	}
+
+	function askQuestion(question: QuestionString) {
+		$connection.sendEvent({
+			message: {
+				type: 'askQuestionEvent',
+				value: {
+					question
+				}
+			}
+		});
+	}
+
+	function answerQuestion(question: QuestionString, answer: string | null) {
+		$connection.sendEvent({
+			message: {
+				type: 'answerQuestionEvent',
+				value: {
+					question,
+					answer,
+				}
+			}
+		});
 	}
 
 	function leaveRoom() {
@@ -93,7 +117,7 @@ export const useApi = defineStore('api', () => {
 			message: {
 				type: 'positionEvent',
 				value: {
-					postiion:  {
+					postiion: {
 						lat: lat,
 						long: long
 					}
@@ -140,6 +164,8 @@ export const useApi = defineStore('api', () => {
 		startGame,
 		finishEarly,
 		wasFound,
+		askQuestion,
+		answerQuestion,
 
 		userState
 	}

@@ -1,4 +1,4 @@
-import type { MapCircleType, Position, UserState } from "~/server/utils/state"
+import type { MapCircleType, Position, QuestionString, UserState } from "~/server/utils/state"
 
 // type for all allowed messages from client to server
 export type ClientMessage = {
@@ -46,10 +46,10 @@ export type HiderFoundEvent = {}
 export type GameFinishEvent = {}
 
 export type AskQuestionEvent = {
-	question: string,
+	question: QuestionString,
 }
 export type AnswerQuestionEvent = {
-	question: string,
+	question: QuestionString,
 	answer: string | null,
 }
 

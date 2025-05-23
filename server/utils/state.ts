@@ -1,7 +1,6 @@
 import { Peer } from 'crossws';
 import { JoinRoomStatus, ServerMessage } from '~/types';
 import { getDistance } from 'geolib'
-import { GeolibInputCoordinates } from 'geolib/es/types';
 
 type User = {
     id: string,
@@ -40,9 +39,11 @@ type Room = {
 }
 
 export type Question = {
-    question: string,
+    question: QuestionString,
     answer: string | undefined | null,
 }
+
+export type QuestionString = typeof questions[number];
 
 export const questions = [
     "Is your latitude higher or lower than mine?",
@@ -62,7 +63,7 @@ export const questions = [
     "If I yelled your name right now, would you hear me?",
     "Can I get to your location without using stairs?",
     "Which is the nearest cafeteria?",
-]
+] as const;
 
 export enum GamePhase {
     LOBBY = "lobby",
@@ -508,7 +509,7 @@ export class State {
         room.hiderFoundTime = Date.now();
     }
 
-    askQuestion(peerId: string, question: string) {
+    askQuestion(peerId: string, question: QuestionString) {
         const user = this.getUserByPeerId(peerId);
         if (user === undefined) {
             return;
@@ -545,7 +546,7 @@ export class State {
         room.nSeekerCoins -= QUESTION_COST;
     }
 
-    answerQuestion(peerId: string, question: string, answer: string | null) {
+    answerQuestion(peerId: string, question: QuestionString, answer: string | null) {
         const user = this.getUserByPeerId(peerId);
         if (user === undefined) {
             return;
