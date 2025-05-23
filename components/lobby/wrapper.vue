@@ -14,6 +14,11 @@ function handleClose() {
 	api.closeRoom()
 }
 
+function handleStart() {
+	stateStore.waitingForUpdate = true
+	api.startGame()
+}
+
 </script>
 
 <template>
@@ -23,6 +28,7 @@ function handleClose() {
 		:users="stateStore.users"
 		@close="handleClose"
 		@leave="handleLeave"
+		@start="handleStart"
 		@make-hider="(hiderId) => api.setHider(hiderId)"
 	/>
 </template>

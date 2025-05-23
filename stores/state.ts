@@ -8,11 +8,7 @@ export const useStateStore = defineStore('state', () => {
 	const username = useLocalStorage('username', '')
 	const userId = useLocalStorage('userId', uuidv4())
 
-	const waitingForUpdate = ref(false)
-
-	watch(waitingForUpdate, () => {
-		console.log(waitingForUpdate.value)
-	})
+	const waitingForUpdate = ref(true)
 
 	watch(() => api.userState, () => {
 		if (waitingForUpdate.value) {
@@ -22,6 +18,10 @@ export const useStateStore = defineStore('state', () => {
 
 	const roomId = computed(() => api.userState?.room?.id)
 
+	const isHider = computed(() => api.userState?.room?.hiderId === userId.value)
+
+	const hidingEndTime = computed(() => api.userState?.room?.hidingTimeEnd ?? 0)
+	
 	const gameState = computed<GamePhase | undefined>(() => api.userState?.room?.gamePhase)
 	
 	const users = computed<InternalUser[]>(() => {
@@ -56,7 +56,9 @@ export const useStateStore = defineStore('state', () => {
 		roomId,
 		users,
 		waitingForUpdate,
-		gameState
+		gameState,
+		hidingEndTime,
+		isHider
 	}
 })
 
