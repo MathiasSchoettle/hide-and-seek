@@ -11,6 +11,7 @@ const emit = defineEmits<{
 	close: []
 	leave: []
 	makeHider: [id: string]
+	start: []
 }>()
 
 const isLeader = computed(() => props.users.find((user) => user.isOwner)?.id === props.userId)
@@ -18,6 +19,8 @@ const isLeader = computed(() => props.users.find((user) => user.isOwner)?.id ===
 function handleSetHider(id: string) {
 	emit('makeHider', id)
 }
+
+const preventStart = computed(() => props.users.length < 2)
 
 </script>
 
@@ -44,5 +47,9 @@ function handleSetHider(id: string) {
 				</div>
 			</div>
 		</div>
+
+		<UiButton class="font-bold" :class="{'!bg-neutral-500': preventStart}" @click="emit('start')" :disabled="preventStart" size="xl" v-if="isLeader">
+			Start Game
+		</UiButton>
 	</div>
 </template>

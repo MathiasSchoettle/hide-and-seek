@@ -2,11 +2,28 @@
 import { GamePhase } from '~/server/utils/state';
 
 const stateStore = useStateStore()
+const api = useApi()
+
+function handleEearlyFinish() {
+	stateStore.waitingForUpdate = true
+	api.finishEarly()
+}
+
+function handleFound() {
+	stateStore.waitingForUpdate = true
+	api.wasFound()
+}
+
+const { coords } = useGeolocation()
 
 </script>
 
 <template>
 	<div class="h-screen w-screen bg-neutral-900 flex flex-col justify-center items-center text-white">
+
+		<div class="bg-white absolute top-5 right-5 whitespace-pre-wrap text-black">
+			{{ JSON.stringify(coords, null, 2) }}
+		</div>
 
 		<UsernameInput v-if="!stateStore.username"/>
 
@@ -17,5 +34,13 @@ const stateStore = useStateStore()
 		<RoomJoinOrCreate v-else-if="stateStore.gameState === undefined"/>
 
 		<LobbyWrapper v-else-if="stateStore.gameState === GamePhase.LOBBY"/>
+
+		<Timer @finish="handleEearlyFinish" :is-hider="stateStore.isHider" :time-end="stateStore.hidingEndTime" v-else-if="stateStore.gameState === GamePhase.HIDING"/>
+
+		<Map v-if="stateStore.gameState === GamePhase.SEEKING" @found-me="handleFound" :is-hider="stateStore.isHider" :seekers="stateStore.seekerPositions" :hider="stateStore.hiderPosition"/>
+
+		<div v-if="stateStore.gameState === GamePhase.HIDER_FOUND">
+			GAME OVER
+		</div>
 	</div>
 </template>

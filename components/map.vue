@@ -1,61 +1,36 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import L from 'leaflet'
-import { LMap, LTileLayer, LMarker, LPopup } from '@vue-leaflet/vue-leaflet'
 
-const props = defineProps<{
-	hider_location: { lat: number; lng: number }
-	seeker_location: { lat: number; lng: number }
+defineProps<{
+	isHider: boolean
+	hider: { lat: number; lng: number }
+	seekers: { lat: number, lng: number }[]
 }>()
 
-const map = ref(null)
+defineEmits<{
+	foundMe: []
+}>()
 
-const center = ref<[number, number]>([props.hider_location.lat, props.hider_location.lng])
-const zoom = 16
-const seeker_icon = { url: "https://www.lfdr.de/People/Alumni/pia_eichinger.jpg", size: [45, 70] }
-const hider_icon = { url: "https://www.lfdr.de/People/schmidbauer/schmidbauer.jpg", size: [50, 70] }
-
-const seekerPosition = ref<[number, number]>([props.seeker_location.lat, props.seeker_location.lng])
-const hiderPosition = ref<[number, number]>([props.hider_location.lat, props.hider_location.lng])
-
-const move_center = (lat: number, lng: number) => {
-	map.value?.leafletObject.flyTo([lat, lng], zoom)
-}
-
-const onMapClick = (event: any) => {
-	// Move seeker marker
-	const { lat, lng } = event.latlng
-	seekerPosition.value = [lat, lng]
-	move_center(lat, lng)
-}
-
-// // On click for marker creation
-// const onMapClick = (event: any) => {
-// 	const { lat, lng } = event.latlng
-// 
-// 	const name = prompt('Enter name for this location:')
-// 	if (!name) return
-// 
-// 	const marker = L.marker([lat, lng]).bindPopup(name).addTo(map.value.leafletObject)
-// 	markers.value.push(marker)
-// 	move_center(lat, lng)
-// }
 </script>
 
 <template>
-	<LMap ref="map" style="height: 100vh; width: 100vw" :zoom="zoom" :center="center" :use-global-leaflet="true"
-		@click="onMapClick">
-		<LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-			attribution="&copy; <a href='https://www.openstreetmap.org/'>OpenStreetMap</a> contributors" />
+	<LMap
+		class="h-screen w-full"
+		:zoom="6"
+		:center="[hider.lat, hider.lng]"
+		:use-global-leaflet="false"
+	>
+		<LTileLayer
+			url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+			attribution="&amp;copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors"
+			layer-type="base"
+			name="OpenStreetMap"
+		/>
 
-		<LMarker :lat-lng="seekerPosition">
-			<LIcon :icon-url="seeker_icon.url" :icon-size="seeker_icon.size" />
-			<LPopup>Seeker</LPopup>
-		</LMarker>
-
-		<LMarker :lat-lng="hiderPosition">
-			<LIcon :icon-url="hider_icon.url" :icon-size="hider_icon.size" />
-			<LPopup>Hider</LPopup>
-		</LMarker>
+		<LCircleMarker v-if="isHider" :lat-lng="hider" :radius="10" color="red"/>
+		<LCircleMarker v-for="seeker in seekers" :lat-lng="seeker" :radius="10" color="blue"/>
 	</LMap>
+
+	<UiButton v-if="isHider" @click="$emit('foundMe')" class="z-[400] shadow absolute left-auto right-auto bottom-10">
+		They found me
+	</UiButton>
 </template>

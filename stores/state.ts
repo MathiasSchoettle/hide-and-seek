@@ -8,11 +8,7 @@ export const useStateStore = defineStore('state', () => {
 	const username = useLocalStorage('username', '')
 	const userId = useLocalStorage('userId', uuidv4())
 
-	const waitingForUpdate = ref(false)
-
-	watch(waitingForUpdate, () => {
-		console.log(waitingForUpdate.value)
-	})
+	const waitingForUpdate = ref(true)
 
 	watch(() => api.userState, () => {
 		if (waitingForUpdate.value) {
@@ -22,6 +18,10 @@ export const useStateStore = defineStore('state', () => {
 
 	const roomId = computed(() => api.userState?.room?.id)
 
+	const isHider = computed(() => api.userState?.room?.hiderId === userId.value)
+
+	const hidingEndTime = computed(() => api.userState?.room?.hidingTimeEnd ?? 0)
+	
 	const gameState = computed<GamePhase | undefined>(() => api.userState?.room?.gamePhase)
 	
 	const users = computed<InternalUser[]>(() => {
@@ -41,6 +41,25 @@ export const useStateStore = defineStore('state', () => {
 		})
 	})
 
+	const seekerPositions = computed(() => {
+		const hiderId = api.userState?.room?.hiderId
+
+		const seekerIds = api.userState?.room?.userIds.filter(id => id !== hiderId) ?? []
+		const positions = api.userState?.room?.positions
+
+		if (!positions) return []
+
+		return seekerIds?.map(id => positions[id]).map(pos => ({ lat: pos.lat, lng: pos.long }))
+	})
+
+	const hiderPosition = computed(() => {
+		const hiderId = api.userState?.room?.hiderId ?? ''
+
+		const position = api.userState?.room?.positions[hiderId]
+
+		return { lat: position?.lat ?? 0, lng: position?.long ?? 0 }
+	})
+
 	watch(() => api.userState, (state) => {
 		// maybe something else
 	})
@@ -56,7 +75,11 @@ export const useStateStore = defineStore('state', () => {
 		roomId,
 		users,
 		waitingForUpdate,
-		gameState
+		gameState,
+		hidingEndTime,
+		isHider,
+		seekerPositions,
+		hiderPosition,
 	}
 })
 

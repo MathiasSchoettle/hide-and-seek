@@ -8,8 +8,6 @@ export default defineNuxtPlugin(() => {
 		const lat = coords.value.latitude
 		const lon = coords.value.longitude
 
-		console.debug(lat, lon, error.value)
-
 		api.sendGeoData(lat, lon)
 	}, 1000)
 })

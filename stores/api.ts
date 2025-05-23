@@ -102,6 +102,33 @@ export const useApi = defineStore('api', () => {
 		})
 	}
 
+	function startGame() {
+		$connection.sendEvent({
+			message: {
+				type: 'gameStartEvent',
+				value: {}
+			}
+		})
+	}
+
+	function finishEarly() {
+		$connection.sendEvent({
+			message: {
+				type: 'startSeekingPhaseEvent',
+				value: {}
+			}
+		})
+	}
+
+	function wasFound() {
+		$connection.sendEvent({
+			message: {
+				type: 'hiderFoundEvent',
+				value: {}
+			}
+		})
+	}
+
 	return {
 		sayMoin,
 		createNewRoom,
@@ -110,6 +137,9 @@ export const useApi = defineStore('api', () => {
 		closeRoom,
 		setHider,
 		sendGeoData,
+		startGame,
+		finishEarly,
+		wasFound,
 
 		userState
 	}
