@@ -8,11 +8,11 @@ export default defineWebSocketHandler({
 	},
 	close(peer, _) {
 		console.debug('close')
-		state.disconnectUser(peer.id);
+		state.disconnectPeer(peer.id);
 	},
 	error(peer) {
 		console.debug('error')
-		state.disconnectUser(peer.id);
+		state.disconnectPeer(peer.id);
 	},
 	async message(peer, message) {
 		const clientMessage: ClientMessage = JSON.parse(message.toString())

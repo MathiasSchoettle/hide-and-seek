@@ -1,10 +1,14 @@
-import { highlight } from '@nuxt/ui/runtime/utils/fuse.js';
-import { Peer } from 'crossws'
+import { Peer } from 'crossws';
 import { JoinRoomStatus, ServerMessage } from '~/types';
 
 type User = {
     id: string,
     name: string,
+    peer?: Peer,
+}
+
+type Compass = {
+    userId: string,
     peer?: Peer,
 }
 
@@ -29,10 +33,12 @@ export type UserState = {
 
 export class State {
     private users: User[];
+    private compasses: Compass[];
     private rooms: Room[];
     constructor() {
-        this.rooms = [];
         this.users = [];
+        this.compasses = [];
+        this.rooms = [];
     }
 
     private getUserByPeerId(peerId: string): User | undefined {
@@ -67,7 +73,7 @@ export class State {
     }
 
     connectUser(id: string, name: string, peer: Peer): void {
-        const user = this.getUserByPeerId(peer.id);
+        const user = this.users.find(u => u.id);
         if (user !== undefined) {
             user.peer = peer;
         }
@@ -78,11 +84,36 @@ export class State {
         })
     }
 
-    disconnectUser(peerId: string) {
+    connectCompass(userId: string, peer: Peer): void {
+        this.compasses.push({
+            userId,
+            peer,
+        })
+    }
+
+    disconnectPeer(peerId: string) {
         const user = this.getUserByPeerId(peerId);
-        if (user === undefined) {
-            return;
+        if (user !== undefined) {
+            this.disconnectUser(user);
+        } else {
+            const compass = this.compasses.find(c => {
+                if (c.peer === undefined) {
+                    return false;
+                }
+                return c.peer.id === peerId;
+            });
+            if (compass !== undefined) {
+                this.disconnectCompass(compass);
+            }
         }
+    }
+
+    private disconnectCompass(compass: Compass) {
+        const index = this.compasses.indexOf(compass);
+        this.compasses.splice(index, 1);
+    }
+
+    private disconnectUser(user: User) {
         user.peer = undefined;
 
         const room = this.getRoomByUserId(user.id);
@@ -99,23 +130,39 @@ export class State {
         room.userIds.splice(room.userIds.indexOf(user.id), 1);
     }
 
-    publishUserState() {
+    publishGameStates() {
         for (const user of this.users) {
             if (user.peer !== undefined) {
-                const state = this.getUserState(user);
-                const event: ServerMessage = {
-                    message: {
-                        type: 'updateStateEvent',
-                        value: { state },
-                    }
-                }
-                const stateMessage = JSON.stringify(event)
-                user.peer.send(stateMessage);
+                this.sendUserState(user.id, user.peer);
+            }
+        }
+        for (const compass of this.compasses) {
+            if (compass.peer !== undefined) {
+                this.sendUserState(compass.userId, compass.peer);
             }
         }
     }
 
-    getUserState(user: User): UserState {
+    sendUserState(userId: string, peer: Peer) {
+        const state = this.getUserState(userId);
+        const event: ServerMessage = {
+            message: {
+                type: 'updateStateEvent',
+                value: { state },
+            }
+        }
+        const stateMessage = JSON.stringify(event)
+        peer.send(stateMessage);
+    }
+
+    private getUserState(userId: string): UserState {
+        const user = this.users.find(u => u.id === userId);
+        if (user === undefined) {
+            return {
+                room: undefined,
+                userNames: {},
+            }
+        }
         const relevantUserIds = new Set<string>();
         relevantUserIds.add(user.id);
 

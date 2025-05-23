@@ -6,6 +6,7 @@ export type ClientMessage = {
 	message:
 	// requests
 	| { type: 'moinRequest', value: MoinRequest }
+	| { type: 'compassMoinRequest', value: CompassMoinRequest }
 	| { type: 'createRoomRequest', value: CreateRoomRequest }
 	| { type: 'joinRoomRequest', value: JoinRoomRequest }
 	// events
@@ -17,6 +18,9 @@ export type ClientPayload = ClientMessage['message']
 export type MoinRequest = {
 	userId: string
 	username: string
+}
+export type CompassMoinRequest = {
+	userId: string
 }
 
 export type CreateRoomRequest = {}
@@ -35,6 +39,7 @@ export type ServerMessage = {
 	message:
 	// responses
 	| { type: 'moinMoinResponse', value: MoinMoinResponse }
+	| { type: 'compassMoinMoinResponse', value: CompassMoinMoinResponse }
 	| { type: 'createRoomResponse', value: CreateRoomResponse }
 	| { type: 'joinRoomResponse', value: JoinRoomResponse }
 	// events
@@ -43,7 +48,7 @@ export type ServerMessage = {
 export type ServerPayload = ServerMessage['message']
 
 export type MoinMoinResponse = {}
-
+export type CompassMoinMoinResponse = {}
 export type CreateRoomResponse = {}
 
 export type JoinRoomResponse = {
