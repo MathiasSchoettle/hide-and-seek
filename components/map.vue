@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { MapCircleType, type MapCircle } from '~/server/utils/state';
-
 	
 const store = useStateStore();
+const api = useApi();
 
 const props = defineProps<{
 	isHider: boolean
@@ -15,6 +15,9 @@ defineEmits<{
 	foundMe: []
 }>()
 
+const position = ref<Position>();
+const showModal = ref<boolean>(false);
+
 const center: [number, number] = [props.hider.lat, props.hider.lng]
 
 const circleColors: Record<MapCircleType, string> = {
@@ -23,14 +26,39 @@ const circleColors: Record<MapCircleType, string> = {
 	[MapCircleType.SEEKERS_FORTUNE]: "gold",
 }
 
+const circleButtonContents: [MapCircleType, string][] = [
+	[MapCircleType.SMOKE_BOMB, "Smoke bomb"],
+	[MapCircleType.FREEZE_BOMB, "Freeze bomb"],
+	[MapCircleType.SEEKERS_FORTUNE, "Seekers fortune"],
+]
+
+const handleClick = (evt: any) => {
+	console.log(props.circles);
+	console.log(evt);
+	const latLng = evt.latlng;
+	const clickPosition: Position = {
+		lat: latLng.lat,
+		long: latLng.lng,
+	}
+	position.value = clickPosition;
+	showModal.value = true;
+}
+
+const addCircle = (type: MapCircleType, position: Position) => {
+	api.addMapCircle(type, position);
+	showModal.value = false;
+}
+
 </script>
 
 <template>
+	<div class="h-full w-full">
 	<LMap
 		class="h-screen w-full"
 		:zoom="16"
 		:center="center"
 		:use-global-leaflet="false"
+		@click="handleClick"
 	>
 		<LTileLayer
 			url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -54,6 +82,14 @@ const circleColors: Record<MapCircleType, string> = {
 			:fill-opacity="0.6"
 		/>
 	</LMap>
+	<UiModal v-model:open="showModal" title="Choose spell">
+		<template #body>
+			<UiButton v-if="position !== undefined" v-for="button in circleButtonContents" @click="addCircle(button[0], position)">
+				{{button[1]}}
+			</UiButton>
+		</template>
+	</UiModal>
+</div>
 
 	<!-- <UiButton v-if="isHider" @click="$emit('foundMe')" class="z-[400] shadow absolute left-auto right-auto bottom-10 font-bold">
 		I got caught!
