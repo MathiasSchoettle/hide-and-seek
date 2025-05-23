@@ -39,7 +39,7 @@ const { coords } = useGeolocation({enableHighAccuracy: true})
 
 		<Timer @finish="handleEearlyFinish" :is-hider="stateStore.isHider" :time-end="stateStore.hidingEndTime" v-else-if="stateStore.gameState === GamePhase.HIDING"/>
 
-		<Map v-else-if="stateStore.gameState === GamePhase.SEEKING" @found-me="handleFound" :is-hider="stateStore.isHider" :seekers="stateStore.seekerPositions" :hider="stateStore.hiderPosition"/>
+		<Tabs v-else-if="stateStore.gameState === GamePhase.SEEKING"/>
 
 		<div v-else-if="stateStore.gameState === GamePhase.HIDER_FOUND">
 			<UiButton v-if="stateStore.isLeader" @click="api.closeRoom()">Close</UiButton>

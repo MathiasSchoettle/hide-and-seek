@@ -3,11 +3,7 @@ import type { TabsItem } from '@nuxt/ui';
 
 const stateStore = useStateStore()
 
-
 const index = ref('0')
-
-const hiders = { lat: 49.00252018672146, lng: 12.100188665384959, name: 'Schmiddy' }
-const seekers = [{ lat: 49.00245411928066, lng: 12.097421476143023, name: 'Schmaddes'}]
 
 const items: TabsItem[] = [
 	{
@@ -27,9 +23,7 @@ const items: TabsItem[] = [
 		<div class="grow w-full flex flex-col items-center justify-center overflow-hidden">
 			<Map
 				v-show="index === '0'"
-				:hider="hiders"
-				:seekers="seekers"
-				:is-hider="stateStore.isHider"
+				:is-hider="stateStore.isHider" :seekers="stateStore.seekerPositions" :hider="stateStore.hiderPosition"
 			/>
 
 			<div class="w-full h-full" v-show="index === '1'">
