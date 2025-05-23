@@ -1,22 +1,24 @@
 <script lang="ts" setup>
 
-defineProps<{
+const props = defineProps<{
 	isHider: boolean
-	hider: { lat: number; lng: number }
-	seekers: { lat: number, lng: number }[]
+	hider: { lat: number; lng: number, name: string }
+	seekers: { lat: number, lng: number, name: string }[]
 }>()
 
 defineEmits<{
 	foundMe: []
 }>()
 
+const center: [number, number] = [props.hider.lat, props.hider.lng]
+
 </script>
 
 <template>
 	<LMap
 		class="h-screen w-full"
-		:zoom="6"
-		:center="[hider.lat, hider.lng]"
+		:zoom="16"
+		:center="center"
 		:use-global-leaflet="false"
 	>
 		<LTileLayer
@@ -26,11 +28,15 @@ defineEmits<{
 			name="OpenStreetMap"
 		/>
 
-		<LCircleMarker v-if="isHider" :lat-lng="hider" :radius="10" color="red"/>
-		<LCircleMarker v-for="seeker in seekers" :lat-lng="seeker" :radius="10" color="blue"/>
+		<LCircleMarker v-if="isHider" :lat-lng="hider" :radius="10" color="red">
+			<LTooltip>{{ hider.name }}</LTooltip>
+		</LCircleMarker>
+		<LCircleMarker v-for="seeker in seekers" :lat-lng="seeker" :radius="10" color="blue">
+			<LTooltip>{{ seeker.name }}</LTooltip>
+		</LCircleMarker>
 	</LMap>
 
-	<UiButton v-if="isHider" @click="$emit('foundMe')" class="z-[400] shadow absolute left-auto right-auto bottom-10">
-		They found me
+	<UiButton v-if="isHider" @click="$emit('foundMe')" class="z-[400] shadow absolute left-auto right-auto bottom-10 font-bold">
+		I got caught!
 	</UiButton>
 </template>

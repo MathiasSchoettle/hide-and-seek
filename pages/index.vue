@@ -14,14 +14,14 @@ function handleFound() {
 	api.wasFound()
 }
 
-const { coords } = useGeolocation()
+const { coords } = useGeolocation({enableHighAccuracy: true})
 
 </script>
 
 <template>
 	<div class="h-screen w-screen bg-neutral-900 flex flex-col justify-center items-center text-white">
 
-		<div class="bg-white absolute top-5 right-5 whitespace-pre-wrap text-black">
+		<div class="bg-white absolute top-5 right-5 whitespace-pre-wrap text-black z-[100]">
 			{{ JSON.stringify(coords, null, 2) }}
 		</div>
 
@@ -37,9 +37,9 @@ const { coords } = useGeolocation()
 
 		<Timer @finish="handleEearlyFinish" :is-hider="stateStore.isHider" :time-end="stateStore.hidingEndTime" v-else-if="stateStore.gameState === GamePhase.HIDING"/>
 
-		<Map v-if="stateStore.gameState === GamePhase.SEEKING" @found-me="handleFound" :is-hider="stateStore.isHider" :seekers="stateStore.seekerPositions" :hider="stateStore.hiderPosition"/>
+		<Map v-else-if="stateStore.gameState === GamePhase.SEEKING" @found-me="handleFound" :is-hider="stateStore.isHider" :seekers="stateStore.seekerPositions" :hider="stateStore.hiderPosition"/>
 
-		<div v-if="stateStore.gameState === GamePhase.HIDER_FOUND">
+		<div v-else-if="stateStore.gameState === GamePhase.HIDER_FOUND">
 			GAME OVER
 		</div>
 	</div>

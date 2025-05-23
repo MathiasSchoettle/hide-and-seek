@@ -49,7 +49,7 @@ export const useStateStore = defineStore('state', () => {
 
 		if (!positions) return []
 
-		return seekerIds?.map(id => positions[id]).map(pos => ({ lat: pos.lat, lng: pos.long }))
+		return seekerIds?.map(id => ({ lat: positions[id].lat, lng: positions[id].long, name: api.userState?.userNames[id] ?? 'empty'}))
 	})
 
 	const hiderPosition = computed(() => {
@@ -57,7 +57,7 @@ export const useStateStore = defineStore('state', () => {
 
 		const position = api.userState?.room?.positions[hiderId]
 
-		return { lat: position?.lat ?? 0, lng: position?.long ?? 0 }
+		return { lat: position?.lat ?? 0, lng: position?.long ?? 0, name: api.userState?.userNames[hiderId!] ?? 'empty' }
 	})
 
 	watch(() => api.userState, (state) => {

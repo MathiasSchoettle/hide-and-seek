@@ -32,7 +32,7 @@ function join() {
 	joinError.value = ''
 	createError.value = ''
 
-	api.joinRoom(state.value.pin.join(''))
+	api.joinRoom(state.value.pin.join('').toUpperCase())
 		.then((response) => {
 			switch(response.status) {
 				case JoinRoomStatus.SUCCESS: 
