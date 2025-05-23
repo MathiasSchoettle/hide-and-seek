@@ -26,11 +26,11 @@ defineEmits<{
 			name="OpenStreetMap"
 		/>
 
-		<LCircleMarker :lat-lng="hider" :radius="10" color="red"/>
+		<LCircleMarker v-if="isHider" :lat-lng="hider" :radius="10" color="red"/>
 		<LCircleMarker v-for="seeker in seekers" :lat-lng="seeker" :radius="10" color="blue"/>
 	</LMap>
 
-	<UiButton v-if="isHider" class="z-[400] shadow absolute left-auto right-auto bottom-10">
+	<UiButton v-if="isHider" @click="$emit('foundMe')" class="z-[400] shadow absolute left-auto right-auto bottom-10">
 		They found me
 	</UiButton>
 </template>

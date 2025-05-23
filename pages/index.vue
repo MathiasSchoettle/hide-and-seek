@@ -14,10 +14,16 @@ function handleFound() {
 	api.wasFound()
 }
 
+const { coords } = useGeolocation()
+
 </script>
 
 <template>
 	<div class="h-screen w-screen bg-neutral-900 flex flex-col justify-center items-center text-white">
+
+		<div class="bg-white absolute top-5 right-5 whitespace-pre-wrap text-black">
+			{{ JSON.stringify(coords, null, 2) }}
+		</div>
 
 		<UsernameInput v-if="!stateStore.username"/>
 
