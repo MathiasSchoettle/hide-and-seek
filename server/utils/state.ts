@@ -85,6 +85,7 @@ export class State {
         const user = this.users.find(u => u.id);
         if (user !== undefined) {
             user.peer = peer;
+            return;
         }
         this.users.push({
             id,
