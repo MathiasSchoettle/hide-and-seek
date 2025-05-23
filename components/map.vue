@@ -86,7 +86,6 @@ const shouldHideTeammates = computed(() => {
 </script>
 
 <template>
-	{{ shouldHideTeammates }}
 	<div class="h-full w-full">
 		<LMap
 			class="h-screen w-full"
