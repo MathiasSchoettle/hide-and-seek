@@ -1,4 +1,4 @@
-import type { UserState } from "~/server/utils/state"
+import type { Position, UserState } from "~/server/utils/state"
 
 // type for all allowed messages from client to server
 export type ClientMessage = {
@@ -12,6 +12,8 @@ export type ClientMessage = {
 	// events
 	| { type: 'leaveRoomEvent', value: LeaveRoomEvent }
 	| { type: 'closeRoomEvent', value: CloseRoomEvent }
+	| { type: 'setHiderEvent', value: SetHiderEvent }
+	| { type: 'positionEvent', value: PositionEvent }
 }
 export type ClientPayload = ClientMessage['message']
 
@@ -32,6 +34,14 @@ export type JoinRoomRequest = {
 export type LeaveRoomEvent = {}
 
 export type CloseRoomEvent = {}
+
+export type SetHiderEvent = {
+	hiderId: string,
+}
+
+export type PositionEvent = {
+	postiion: Position
+}
 
 // type for all allowed messages from server to client
 export type ServerMessage = {

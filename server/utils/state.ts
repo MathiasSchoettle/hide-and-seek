@@ -12,18 +12,27 @@ type Compass = {
     peer?: Peer,
 }
 
-enum RoomStatus {
-    LOBBY = "lobby",
-    PLAYING = "playing",
-}
-
 const MAX_ROOM_SIZE = 10;
 
 type Room = {
     id: string,
-    status: RoomStatus,
     ownerId: string,
     userIds: string[],
+    hiderId: string,
+    gamePhase: GamePhase,
+    positions: Record<string, Position>
+}
+
+enum GamePhase {
+    LOBBY = "lobby",
+    HIDING = "hiding",
+    SEEKING = "seeking",
+    HIDER = "found",
+}
+
+export type Position = {
+    lat: number,
+    long: number,
 }
 
 export type UserState = {
@@ -118,16 +127,19 @@ export class State {
 
         const room = this.getRoomByUserId(user.id);
 
+        // If the user is not in room, do nothing
         if (room === undefined) {
             return;
         }
-
         // If the owner disconnects, he stays in the room
         if (room.ownerId === user.id) {
             return;
         }
+        // If the game has already started, the user does not leave
+        if (room.gamePhase === GamePhase.LOBBY) {
+            room.userIds.splice(room.userIds.indexOf(user.id), 1);
+        }
 
-        room.userIds.splice(room.userIds.indexOf(user.id), 1);
     }
 
     publishGameStates() {
@@ -191,7 +203,9 @@ export class State {
             id: this.generateRoomId(),
             ownerId: user.id,
             userIds: [user.id],
-            status: RoomStatus.LOBBY,
+            hiderId: user.id,
+            gamePhase: GamePhase.LOBBY,
+            positions: {},
         }
         this.rooms.push(room)
     }
@@ -245,6 +259,38 @@ export class State {
         }
         const index = this.rooms.findIndex(r => r === room);
         this.rooms.splice(index, 1);
+    }
+
+    updatePosition(peerId: string, position: Position) {
+        const user = this.getUserByPeerId(peerId);
+        if (user === undefined) {
+            return;
+        }
+        const room = this.getRoomByUserId(user.id);
+        if (room === undefined) {
+            return;
+        }
+        room.positions[user.id] = position;
+    }
+
+    setHider(peerId: string, hiderId: string) {
+        const user = this.getUserByPeerId(peerId);
+        if (user === undefined) {
+            return;
+        }
+
+        const room = this.getRoomByUserId(user.id);
+
+        // only the owner is allowed to do this and only if the game has not started.
+        if (room === undefined || room.ownerId !== user.id || room.gamePhase !== GamePhase.LOBBY) {
+            return;
+        }
+
+        // the hider must be in the room
+        if (!room.userIds.includes(hiderId)) {
+            return;
+        }
+        room.hiderId = hiderId;
     }
 }
 

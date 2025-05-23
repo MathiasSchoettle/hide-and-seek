@@ -1,4 +1,4 @@
-import { ClientPayload, MoinRequest, JoinRoomRequest, LeaveRoomEvent, ServerMessage, ServerPayload, CreateRoomRequest, CloseRoomEvent, CompassMoinRequest } from "~/types";
+import { ClientPayload, MoinRequest, JoinRoomRequest, LeaveRoomEvent, ServerMessage, ServerPayload, CreateRoomRequest, CloseRoomEvent, CompassMoinRequest, PositionEvent, SetHiderEvent } from "~/types";
 import { Peer } from 'crossws'
 import { state } from "./state";
 
@@ -49,6 +49,14 @@ async function onCloseRoom(message: CloseRoomEvent, peer: Peer): Promise<undefin
 	state.closeRoom(peer.id);
 }
 
+async function onPosition(message: PositionEvent, peer: Peer): Promise<undefined> {
+	state.updatePosition(peer.id, message.postiion);
+}
+
+async function onSetHider(message: SetHiderEvent, peer: Peer): Promise<undefined> {
+	state.setHider(peer.id, message.hiderId);
+}
+
 const commandRegistry: {
 	[K in ClientPayload as K['type']]: MessageHandler<K['value']>
 } = {
@@ -58,6 +66,8 @@ const commandRegistry: {
 	joinRoomRequest: onJoinRoom,
 	leaveRoomEvent: onLeaveRoom,
 	closeRoomEvent: onCloseRoom,
+	positionEvent: onPosition,
+	setHiderEvent: onSetHider,
 };
 
 
