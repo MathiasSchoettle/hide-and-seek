@@ -231,11 +231,11 @@ export class State {
     }
 
     leaveRoom(peerId: string) {
-        const user = this.getRoomByUserId(peerId);
+        const user: User | undefined = this.getUserByPeerId(peerId);
         if (user === undefined) {
             return;
         }
-        const room = this.getRoomByUserId(user.id);
+        const room: Room | undefined = this.getRoomByUserId(user.id);
         if (room === undefined) {
             return;
         }
@@ -247,11 +247,11 @@ export class State {
     }
 
     closeRoom(peerId: string) {
-        const user = this.getRoomByUserId(peerId);
+        const user: User | undefined = this.getUserByPeerId(peerId);
         if (user === undefined) {
             return;
         }
-        const room = this.getRoomByUserId(user.id);
+        const room: Room | undefined = this.getRoomByUserId(user.id);
         if (room === undefined) {
             return;
         }
