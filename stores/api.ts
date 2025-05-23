@@ -120,6 +120,15 @@ export const useApi = defineStore('api', () => {
 		})
 	}
 
+	function wasFound() {
+		$connection.sendEvent({
+			message: {
+				type: 'hiderFoundEvent',
+				value: {}
+			}
+		})
+	}
+
 	return {
 		sayMoin,
 		createNewRoom,
@@ -130,6 +139,7 @@ export const useApi = defineStore('api', () => {
 		sendGeoData,
 		startGame,
 		finishEarly,
+		wasFound,
 
 		userState
 	}

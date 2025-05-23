@@ -9,6 +9,11 @@ function handleEearlyFinish() {
 	api.finishEarly()
 }
 
+function handleFound() {
+	stateStore.waitingForUpdate = true
+	api.wasFound()
+}
+
 </script>
 
 <template>
@@ -25,5 +30,11 @@ function handleEearlyFinish() {
 		<LobbyWrapper v-else-if="stateStore.gameState === GamePhase.LOBBY"/>
 
 		<Timer @finish="handleEearlyFinish" :is-hider="stateStore.isHider" :time-end="stateStore.hidingEndTime" v-else-if="stateStore.gameState === GamePhase.HIDING"/>
+
+		<Map v-if="stateStore.gameState === GamePhase.SEEKING" @found-me="handleFound" :is-hider="stateStore.isHider" :seekers="stateStore.seekerPositions" :hider="stateStore.hiderPosition"/>
+
+		<div v-if="stateStore.gameState === GamePhase.HIDER_FOUND">
+			GAME OVER
+		</div>
 	</div>
 </template>

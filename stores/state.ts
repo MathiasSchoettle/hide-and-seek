@@ -41,6 +41,25 @@ export const useStateStore = defineStore('state', () => {
 		})
 	})
 
+	const seekerPositions = computed(() => {
+		const hiderId = api.userState?.room?.hiderId
+
+		const seekerIds = api.userState?.room?.userIds.filter(id => id !== hiderId) ?? []
+		const positions = api.userState?.room?.positions
+
+		if (!positions) return []
+
+		return seekerIds?.map(id => positions[id]).map(pos => ({ lat: pos.lat, lng: pos.long }))
+	})
+
+	const hiderPosition = computed(() => {
+		const hiderId = api.userState?.room?.hiderId ?? ''
+
+		const position = api.userState?.room?.positions[hiderId]
+
+		return { lat: position?.lat ?? 0, lng: position?.long ?? 0 }
+	})
+
 	watch(() => api.userState, (state) => {
 		// maybe something else
 	})
@@ -58,7 +77,9 @@ export const useStateStore = defineStore('state', () => {
 		waitingForUpdate,
 		gameState,
 		hidingEndTime,
-		isHider
+		isHider,
+		seekerPositions,
+		hiderPosition,
 	}
 })
 
