@@ -44,7 +44,8 @@ const items: TabsItem[] = [
 				<span class="font-bold text-xl font-mono">{{ stateStore.coinCount }}</span>
 				<UiIcon name="i-lucide-coins" :size="24"/>
 
-				<UiButton v-if="stateStore.isLeader" :ui="{ base: 'ml-4'}" @click="api.closeRoom()" color="error" icon="i-lucide-x" size="xl"></UiButton>
+				<UiButton v-if="stateStore.isHider" :ui="{ base: 'ml-4'}" @click="api.wasFound()" icon="i-lucide-eye" size="xl"/>
+				<UiButton v-if="stateStore.isLeader" :ui="{ base: 'ml-2'}" @click="api.closeRoom()" color="error" icon="i-lucide-x" size="xl"></UiButton>
 			</div>
 		</div>
 </template>

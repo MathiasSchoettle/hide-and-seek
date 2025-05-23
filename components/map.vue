@@ -53,45 +53,41 @@ const addCircle = (type: MapCircleType, position: Position) => {
 
 <template>
 	<div class="h-full w-full">
-	<LMap
-		class="h-screen w-full"
-		:zoom="16"
-		:center="center"
-		:use-global-leaflet="false"
-		@click="handleClick"
-	>
-		<LTileLayer
-			url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-			attribution="&amp;copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors"
-			layer-type="base"
-			name="OpenStreetMap"
-		/>
+		<LMap
+			class="h-screen w-full"
+			:zoom="16"
+			:center="center"
+			:use-global-leaflet="false"
+			@click="handleClick"
+		>
+			<LTileLayer
+				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+				attribution="&amp;copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors"
+				layer-type="base"
+				name="OpenStreetMap"
+			/>
 
-		<LCircleMarker v-if="isHider" :lat-lng="hider" :radius="10" color="red">
-			<LTooltip>{{ hider.name }}</LTooltip>
-		</LCircleMarker>
-		<LCircleMarker v-for="seeker in seekers" :lat-lng="seeker" :radius="10" color="blue">
-			<LTooltip>{{ seeker.name }}</LTooltip>
-		</LCircleMarker>
-		<LCircle
-			v-for="circle in circles"
-			:lat-lng="{lat: circle.position.lat, lng: circle.position.long}"
-			:radius="circle.radius"
-			:stroke="false"
-			:fill-color="circleColors[circle.type]"
-			:fill-opacity="0.6"
-		/>
-	</LMap>
-	<UiModal v-model:open="showModal" title="Choose spell">
-		<template #body>
-			<UiButton v-if="position !== undefined" v-for="button in circleButtonContents" @click="addCircle(button[0], position)">
-				{{button[1]}}
-			</UiButton>
-		</template>
-	</UiModal>
-</div>
-
-	<!-- <UiButton v-if="isHider" @click="$emit('foundMe')" class="z-[400] shadow absolute left-auto right-auto bottom-10 font-bold">
-		I got caught!
-	</UiButton> -->
+			<LCircleMarker v-if="isHider" :lat-lng="hider" :radius="10" color="red">
+				<LTooltip>{{ hider.name }}</LTooltip>
+			</LCircleMarker>
+			<LCircleMarker v-for="seeker in seekers" :lat-lng="seeker" :radius="10" color="blue">
+				<LTooltip>{{ seeker.name }}</LTooltip>
+			</LCircleMarker>
+			<LCircle
+				v-for="circle in circles"
+				:lat-lng="{lat: circle.position.lat, lng: circle.position.long}"
+				:radius="circle.radius"
+				:stroke="false"
+				:fill-color="circleColors[circle.type]"
+				:fill-opacity="0.6"
+			/>
+		</LMap>
+		<UiModal v-model:open="showModal" title="Choose spell">
+			<template #body>
+				<UiButton v-if="position !== undefined" v-for="button in circleButtonContents" @click="addCircle(button[0], position)">
+					{{button[1]}}
+				</UiButton>
+			</template>
+		</UiModal>
+	</div>
 </template>
