@@ -130,23 +130,39 @@ export class State {
         room.userIds.splice(room.userIds.indexOf(user.id), 1);
     }
 
-    publishUserState() {
+    publishGameStates() {
         for (const user of this.users) {
             if (user.peer !== undefined) {
-                const state = this.getUserState(user);
-                const event: ServerMessage = {
-                    message: {
-                        type: 'updateStateEvent',
-                        value: { state },
-                    }
-                }
-                const stateMessage = JSON.stringify(event)
-                user.peer.send(stateMessage);
+                this.sendUserState(user.id, user.peer);
+            }
+        }
+        for (const compass of this.compasses) {
+            if (compass.peer !== undefined) {
+                this.sendUserState(compass.userId, compass.peer);
             }
         }
     }
 
-    getUserState(user: User): UserState {
+    sendUserState(userId: string, peer: Peer) {
+        const state = this.getUserState(userId);
+        const event: ServerMessage = {
+            message: {
+                type: 'updateStateEvent',
+                value: { state },
+            }
+        }
+        const stateMessage = JSON.stringify(event)
+        peer.send(stateMessage);
+    }
+
+    private getUserState(userId: string): UserState {
+        const user = this.users.find(u => u.id === userId);
+        if (user === undefined) {
+            return {
+                room: undefined,
+                userNames: {},
+            }
+        }
         const relevantUserIds = new Set<string>();
         relevantUserIds.add(user.id);
 

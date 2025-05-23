@@ -2,6 +2,6 @@ import { state } from "../utils/state";
 
 export default defineNitroPlugin(async (_) => {
     setInterval(() => {
-        state.publishUserState();
+        state.publishGameStates();
     }, 1000);
 });
