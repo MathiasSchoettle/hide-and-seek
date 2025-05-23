@@ -17,8 +17,6 @@ export const useStateStore = defineStore('state', () => {
 		}
 	})
 
-
-
 	watchEffect(() => {
 		if (
 			$connection.status.value === 'OPEN' ||
