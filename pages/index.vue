@@ -22,7 +22,6 @@ const { coords } = useGeolocation({enableHighAccuracy: true})
 	<div class="h-screen w-screen bg-neutral-900 flex flex-col justify-center items-center text-white">
 
 		<div class="bg-white absolute top-5 right-5 whitespace-pre-wrap text-black z-[500]">
-			{{ JSON.stringify(coords, null, 2) }}
 			{{ JSON.stringify(stateStore.geo, null, 2) }}
 			websocket status: {{ $connection.status }}
 		</div>

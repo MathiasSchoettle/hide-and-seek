@@ -13,7 +13,8 @@ export default defineNuxtPlugin(() => {
 			lat: lat,
 			lon: lon,
 			error: error.value?.message ?? '-',
-			last: new Date(locatedAt.value ?? 0)
+			last: new Date(locatedAt.value ?? 0),
+			accuracy: coords.value.accuracy,
 		}
 		
 		api.sendGeoData(lat, lon)
