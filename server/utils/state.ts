@@ -440,8 +440,35 @@ export class State {
             return;
         }
         room.nHiderCoins += 1;
-        room.nSeekerCoins += 1;
-        this.handleSeekersFortune(room);
+        if (!this.checkFreezeBomb(room)) {
+            room.nSeekerCoins += 1;
+            this.handleSeekersFortune(room);
+        }
+    }
+
+    private checkFreezeBomb(room: Room): boolean {
+        for (const circle of room.mapCircles) {
+            if (circle.type !== MapCircleType.FREEZE_BOMB) {
+                continue;
+            }
+            for (const userId of room.userIds) {
+                if (userId === room.hiderId) {
+                    continue;
+                }
+                const circlePosition = {
+                    lat: circle.position.lat,
+                    lon: circle.position.long,
+                }
+                const userPosition = {
+                    lat: room.positions[userId]?.lat ?? 0,
+                    lon: room.positions[userId]?.long ?? 0,
+                }
+                if (getDistance(circlePosition, userPosition) <= circle.radius) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private handleSeekersFortune(room: Room) {
