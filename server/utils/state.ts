@@ -27,7 +27,8 @@ type Room = {
     hiderId: string,
     gamePhase: GamePhase,
     positions: Record<string, Position>,
-    coins: Record<string, number>,
+    nHiderCoins: number,
+    nSeekerCoins: number,
     hidingTimeEnd?: number,
     hiderFoundTime?: number,
     questions: Question[],
@@ -257,7 +258,8 @@ export class State {
             userIds: [user.id],
             hiderId: user.id,
             gamePhase: GamePhase.LOBBY,
-            coins: {},
+            nHiderCoins: INITIAL_COIN_COUNT,
+            nSeekerCoins: INITIAL_COIN_COUNT,
             positions: {},
             questions: [],
         }
@@ -363,9 +365,6 @@ export class State {
 
         room.gamePhase = GamePhase.HIDING;
         room.hidingTimeEnd = Date.now() + HIDING_DURATION;
-        for (const userId of room.userIds) {
-            room.coins[userId] = INITIAL_COIN_COUNT;
-        }
     }
 
     startSeekingPhase(peerId: string) {
@@ -396,9 +395,8 @@ export class State {
         if (room.gamePhase !== GamePhase.SEEKING) {
             return;
         }
-        for (const userId of room.userIds) {
-            room.coins[userId] += 1;
-        }
+        room.nHiderCoins += 1;
+        room.nSeekerCoins += 1;
     }
 
     updateTimers() {
@@ -467,13 +465,13 @@ export class State {
             return;
         }
 
-        if ((room.coins[user.id] ?? 0) <= 0) {
+        if (room.nSeekerCoins < QUESTION_COST) {
             console.error(`You don't have enough coins to ask a question`);
             return;
         }
 
         room.questions.push({ question, answer: undefined });
-        room.coins[user.id] -= QUESTION_COST;
+        room.nSeekerCoins -= QUESTION_COST;
     }
 
     answerQuestion(peerId: string, question: string, answer: string) {
