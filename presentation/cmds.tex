@@ -1,0 +1,93 @@
+\newcommand{\TODO}[1]{\textcolor{red}{TODO: #1}}
+\newcommand{\refline}[2]{\footnotetext[#1]{\tiny #2}}
+\newcommand{\reflinewon}[1]{\blfootnote{\tiny #1}}
+\newcommand{\genemail}[1]{\href{mailto:#1}{\textless\nolinkurl{#1}\textgreater}}
+
+\NewTColorBox{slidebox}{m}{enhanced,
+  fonttitle=\sffamily\bfseries,
+  colframe=black,
+  colback=white,
+  %coltitle=cyan!25!white,
+  boxrule=0.1pt,
+  left=0pt,right=0pt,top=0pt,bottom=0pt,
+  drop fuzzy shadow,
+  sharp corners,
+  width=#1
+}
+\newcommand{\fslide}[3]{\begin{slidebox}{#1}\includegraphics[width=\linewidth,page=#2]{#3}\end{slidebox}}
+\newcommand{\summaryslide}[5]{\vspace*{1.25em}%
+    \hfill\hbox{\fslide{0.4\linewidth}{#2}{#1}\hspace*{1em}%
+    \fslide{0.4\linewidth}{#3}{#1}\hspace*{1em}}\hfill\vspace*{0.8em}\par
+    \hfill\hbox{\fslide{0.4\linewidth}{#4}{#1}\hspace*{1em}%
+    \fslide{0.4\linewidth}{#5}{#1}\hspace*{1em}}\hfill\break}
+
+
+\newcommand{\xmark}{\ding{55}}
+\newcommand{\headslide}[1]{\begin{frame}\vspace*{\fill}%
+    \begin{center}\textbf{\huge{#1}}\end{center}\vspace*{\fill}\end{frame}}
+
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote[0]{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+\newcommand{\colsep}{1em}
+\newcommand{\colspace}{\hspace*{\colsep}}
+\newlength{\correction}\setlength{\correction}{0.645em}
+\newlength\fullwidth\setlength\fullwidth{\textwidth-\correction}
+
+\newcommand{\bigO}[1]{\ensuremath{\mathcal{O}(#1)}}
+\newcommand{\nsa}{\ensuremath{n_{\text{samp}}}}
+\newcommand{\nit}{\ensuremath{n_{\text{iter}}}}
+\newcommand{\tci}{\ensuremath{t_{\text{circ}}}}
+\newcommand{\tco}{\ensuremath{t_{\text{comm}}}}
+\newcommand{\tm}{\ensuremath{t_{\text{meas}}}}
+\newcommand{\topt}{\ensuremath{t_{\text{opt}}}}
+
+
+% Often occurring structural elements
+\newenvironment{halfitemt}[1]{\begin{column}[t]{0.5\fullwidth-0.5\colsep}%
+    \begin{block}{#1}\begin{itemize}}{\end{itemize}\end{block}\end{column}}
+\newenvironment{halfitem}[1]{\begin{column}{0.5\fullwidth-0.5\colsep}%
+    \begin{block}{#1}\begin{itemize}}{\end{itemize}\end{block}\end{column}}
+\newenvironment{halfitemwdt}[2]{\begin{column}[t]{#2\fullwidth-0.5\colsep}%
+    \begin{block}{#1}\begin{itemize}}{\end{itemize}\end{block}\end{column}}
+
+\newenvironment{halfblock}[1]{\begin{column}[t]{0.5\fullwidth-0.5\colsep}%
+    \begin{block}{#1}}{\end{block}\end{column}}
+\newenvironment{halfblockwdt}[2]{\begin{column}[t]{#1\fullwidth-0.5\colsep}%
+    \begin{block}{#2}}{\end{block}\end{column}}
+
+\newenvironment{half}{\begin{column}{0.5\fullwidth-0.5\colsep}}%
+  {\end{column}}
+\newenvironment{halft}{\begin{column}[t]{0.5\fullwidth-0.5\colsep}}%
+  {\end{column}}
+\newenvironment{halfwdt}[1]{\begin{column}[t]{#1\fullwidth-0.5\colsep}}%
+  {\end{column}}
+\newenvironment{halfwd}[1]{\begin{column}{#1\fullwidth-0.5\colsep}}%
+  {\end{column}}
+
+\makeatletter
+\newcommand{\showfontsize}{\nprounddigits{2}\numprint{\f@size{}} pt}
+\newcommand{\showfontfamily}{\f@family}
+
+\def\mathcolor#1#{\@mathcolor{#1}}
+\def\@mathcolor#1#2#3{%
+  \protect\leavevmode
+  \begingroup
+    \color#1{#2}#3%
+  \endgroup
+}
+\makeatother
+
+\setbeamerfont{footnote}{size=\tiny}
+
+\DeclareCiteCommand{\citefootnote}
+  {\boolfalse{citetracker}\boolfalse{pagetracker}\usebibmacro{prenote}}
+  {\blfootnote{\usebibmacro{author}, \href{\thefield{url}}{\emph{\thefield{title}}} (\thefield{year})}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+

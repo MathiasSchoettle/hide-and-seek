@@ -1,0 +1,94 @@
+\PassOptionsToPackage{colorlinks=true,urlcolor=teal,
+                      linkcolor=black,citecolor=teal}{hyperref}
+\documentclass[aspectratio=169,10pt,xcolor=table]{beamer}
+\usetheme[department=LFD,pageNumbers]{OTHR}
+\usefonttheme{serif}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{enumerate}
+\usepackage{calc}
+\usepackage[most]{tcolorbox}
+\usepackage{amsmath}
+\usepackage{csquotes}
+\usepackage{listofitems} 
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{yquant}
+\usepackage{appendixnumberbeamer}
+\usepackage[
+    backend=biber, 
+    natbib=true,
+    style=numeric,
+    sorting=none,
+    maxbibnames=9,
+    minbibnames=9,
+    giveninits=true
+]{biblatex}
+\addbibresource{references.bib}
+\input{tikz}
+\input{cmds}
+\input{fix_chf}
+
+\begin{document}
+
+\title[Short Title]{Hide and Seek: \textit{Geo Edition}}
+\author[Matthias Schöttle/Simon Thelen/Maja Franz/Yannik Südbeck/Lukas Schmidbauer]{\underline{Matthias Schöttle}\inst{1}, Simon Thelen\inst{1}, Maja Franz\inst{1}, Yannik Südbeck, Lukas Schmidbauer\inst{1}}
+\institute{\inst{1} Technical University of Applied Scienes Regensburg %\quad %
+% \inst{2} Some External Intitute \quad %
+% \inst{3} Some Other External institute}
+\date{\today}
+
+% Angepasstes Titelformat definieren (verwendet bewusst nicht die
+% Beamer-Infrastruktur, um einfache Anpassungen zu zeigen)
+\newcommand{\fillme}{\vskip0pt plus 1filll}
+\newenvironment{references}{\begin{tiny}\begin{flushleft}}%
+    {\end{flushleft}\end{tiny}\vspace*{\fill}}
+\defbeamertemplate*{title page}{customized}[1][]
+{
+  \vspace*{1em}\usebeamerfont{title}\textbf{\inserttitle}\par
+  \vspace*{1em}\setbeamerfont{mainauthor}{size=\fontsize{8.7pt}{9.2}}
+  \usebeamerfont{mainauthor}\textbf{\insertauthor}\bigskip\par
+  \begin{scriptsize}
+  Conference \newline
+  \insertdate
+  \vfill\tiny\insertinstitute
+  \end{scriptsize}
+  
+}
+\logo{%
+\begin{picture}(0,0)%
+     \put(-340,234){\makebox(0,0)[rt]{\includegraphics[height=0.9cm]{img/external.png}}}%
+  \end{picture}%
+}
+
+\maketitle
+
+\begin{frame}{Great title}
+  \setbeamercovered{transparent}
+  \begin{columns}
+    \begin{halfblock}{Some Info}
+      On the right you can see our logo.
+
+      Below, there is a reference.
+    \end{halfblock}
+    \begin{half}
+      \includegraphics[width=\textwidth]{OTHR_OTHR_Logo.pdf}
+    \end{half}
+  \end{columns}
+  \citefootnote{author24}
+\end{frame}
+
+\begin{frame}{Thank You!}
+    \summaryslide{Slides.pdf}{1}{2}{3}{4}
+\end{frame}
+
+\begin{appendix}
+    \nocite{*}
+\begin{frame}{Backup}
+  \center
+  \LARGE{\textbf{Backup Slides}}
+\end{frame}
+
+\end{appendix}
+\end{document}
