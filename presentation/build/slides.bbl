@@ -50,6 +50,7 @@
       \field{title}{Great Publication}
       \field{volume}{1}
       \field{year}{2024}
+      \true{nocite}
       \field{pages}{448\bibrangedash 457}
       \range{pages}{10}
       \verb{urlraw}
