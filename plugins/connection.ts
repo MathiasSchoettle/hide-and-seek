@@ -4,8 +4,11 @@ export default defineNuxtPlugin(() => {
 
 	// TODO need "real" URL here
 	// TODO authentication?
+
+	const protocol = import.meta.dev ? 'ws' : 'wss'
+
 	const { host } = useRequestURL()
-	const { status, data, send, open } = useWebSocket(`ws://${host}/api/websocket`)
+	const { status, data, send, open } = useWebSocket(`${protocol}://${host}/api/websocket`)
 
 	let nextId: bigint = 0n
 
