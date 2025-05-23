@@ -10,6 +10,6 @@ const stateStore = useStateStore()
 
 		<RoomJoinOrCreate v-else-if="!stateStore.roomId"/>
 
-		<span v-else>IN ROOM {{ stateStore.roomId }}</span>
+		<LobbyWrapper v-else/>
 	</div>
 </template>

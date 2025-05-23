@@ -7,18 +7,33 @@ export const useStateStore = defineStore('state', () => {
 	const username = useLocalStorage('username', '')
 	const userId = useLocalStorage('userId', uuidv4())
 
-	const roomId = ref()
-	const users = ref<string[]>([])
-
 	const receivingUpdates = ref(false)
 
 	until(api.userState)
 		.not.toBe(undefined)
 		.then(() => receivingUpdates.value = true)
 
+	const roomId = computed(() => api.userState?.room?.id)
+	
+	const users = computed<InternalUser[]>(() => {
+
+		const room = api.userState?.room
+		const usernames = api.userState?.userNames
+
+		if (!room || !usernames) return []
+
+		return room.userIds.map((id) => {
+			return {
+				id: id,
+				username: usernames[id],
+				isOwner: room.ownerId === id,
+				isHider: false, // TOOD
+			}
+		})
+	})
+
 	watch(() => api.userState, (state) => {
-		roomId.value = state?.room?.id
-		users.value = state?.room?.userIds ?? []
+		// maybe something else
 	})
 
 	until(username).toBeTruthy().then(() => {
@@ -30,5 +45,14 @@ export const useStateStore = defineStore('state', () => {
 		username,
 		userId,
 		roomId,
+		users,
+		receivingUpdates
 	}
 })
+
+export type InternalUser = {
+	id: string
+	username: string
+	isOwner: boolean
+	isHider: boolean
+}
