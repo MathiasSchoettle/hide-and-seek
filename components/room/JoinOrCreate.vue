@@ -2,13 +2,12 @@
 import { JoinRoomStatus } from '~/types'
 
 const api = useApi()
+const stateStore = useStateStore()
 
 const loading = ref(false)
 const joinError = ref<string>()
 
 const createError = ref<string>('')
-
-const success = ref(false)
 
 function create() {
 	loading.value = true
@@ -17,7 +16,7 @@ function create() {
 
 	api.createNewRoom()
 		.then((response) => {
-			success.value = true
+			stateStore.waitingForUpdate = true
 		})
 		.catch(() => {
 			// do something
@@ -37,7 +36,7 @@ function join() {
 		.then((response) => {
 			switch(response.status) {
 				case JoinRoomStatus.SUCCESS: 
-					success.value = true
+					stateStore.waitingForUpdate = true
 					break
 				case JoinRoomStatus.ROOM_DOES_NOT_EXIST:
 				case JoinRoomStatus.ROOM_FULL:
@@ -69,7 +68,7 @@ const ui = computed(() => {
 </script>
 
 <template>
-	<div class="flex flex-col gap-4 items-center" v-if="!success">
+	<div class="flex flex-col gap-4 items-center">
 
 		<div class="text-xl text-pretty font-semibold text-highlighted font-mono">
 			Join via Code
@@ -91,8 +90,5 @@ const ui = computed(() => {
 			Or create your own
 		</UiButton>
 		<span class="text-red-400 text-sm">{{ createError }}</span>
-	</div>
-	<div v-else>
-		<UiIcon name="i-lucide-loader-circle" :size="40" class="animate-spin"/>
 	</div>
 </template>

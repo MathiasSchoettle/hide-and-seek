@@ -4,6 +4,16 @@ const api = useApi()
 
 const stateStore = useStateStore()
 
+function handleLeave() {
+	stateStore.waitingForUpdate = true
+	api.leaveRoom()
+}
+
+function handleClose() {
+	stateStore.waitingForUpdate = true
+	api.closeRoom()
+}
+
 </script>
 
 <template>
@@ -11,8 +21,8 @@ const stateStore = useStateStore()
 		:user-id="stateStore.userId"
 		:room-id="stateStore.roomId ?? ''"
 		:users="stateStore.users"
-		@close="api.closeRoom()"
-		@leave="api.leaveRoom()"
+		@close="handleClose"
+		@leave="handleLeave"
 		@make-hider="(hiderId) => api.setHider(hiderId)"
 	/>
 </template>

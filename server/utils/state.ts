@@ -23,11 +23,11 @@ type Room = {
     positions: Record<string, Position>
 }
 
-enum GamePhase {
+export enum GamePhase {
     LOBBY = "lobby",
     HIDING = "hiding",
     SEEKING = "seeking",
-    HIDER = "found",
+    HIDER_FOUND = "hiderFound",
 }
 
 export type Position = {

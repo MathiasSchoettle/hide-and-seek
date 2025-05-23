@@ -1,4 +1,5 @@
 import {v4 as uuidv4} from 'uuid'
+import type { GamePhase } from '~/server/utils/state'
 
 export const useStateStore = defineStore('state', () => {
 	
@@ -7,13 +8,21 @@ export const useStateStore = defineStore('state', () => {
 	const username = useLocalStorage('username', '')
 	const userId = useLocalStorage('userId', uuidv4())
 
-	const receivingUpdates = ref(false)
+	const waitingForUpdate = ref(false)
 
-	until(api.userState)
-		.not.toBe(undefined)
-		.then(() => receivingUpdates.value = true)
+	watch(waitingForUpdate, () => {
+		console.log(waitingForUpdate.value)
+	})
+
+	watch(() => api.userState, () => {
+		if (waitingForUpdate.value) {
+			waitingForUpdate.value = false
+		}
+	})
 
 	const roomId = computed(() => api.userState?.room?.id)
+
+	const gameState = computed<GamePhase | undefined>(() => api.userState?.room?.gamePhase)
 	
 	const users = computed<InternalUser[]>(() => {
 
@@ -46,7 +55,8 @@ export const useStateStore = defineStore('state', () => {
 		userId,
 		roomId,
 		users,
-		receivingUpdates
+		waitingForUpdate,
+		gameState
 	}
 })
 
