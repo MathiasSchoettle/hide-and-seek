@@ -5,6 +5,7 @@ import type Room from './lobby/room.vue';
 const api = useApi()
 const stateStore = useStateStore()
 
+api.userState?.room?.questions
 
 const messages = ref([
 
