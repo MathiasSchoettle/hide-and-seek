@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+	
+const store = useStateStore();
 
 const props = defineProps<{
 	isHider: boolean
@@ -39,4 +41,5 @@ const center: [number, number] = [props.hider.lat, props.hider.lng]
 	<UiButton v-if="isHider" @click="$emit('foundMe')" class="z-[400] shadow absolute left-auto right-auto bottom-10 font-bold">
 		I got caught!
 	</UiButton>
+	<CoinCounter :count="store.coinCount" class="z-[400] absolute bottom-10 right-10" />
 </template>

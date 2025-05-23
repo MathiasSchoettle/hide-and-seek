@@ -4,7 +4,11 @@ export default defineNitroPlugin(async (_) => {
     let prevState: string | undefined = undefined;
     setInterval(() => {
         if (import.meta.dev) {
-            const newUserState = JSON.stringify(state, (key, value) => key === "peer" ? "peer" : value, 2);
+            const newUserState = JSON.stringify(state, (key, value) => {
+                if (key === "peer") { return "peer" }
+                if (key === "intervals") { return "intervals" }
+                return value;
+            }, 2);
             if (newUserState !== prevState) {
                 console.log(newUserState);
                 prevState = newUserState;

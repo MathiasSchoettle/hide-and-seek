@@ -1,3 +1,12 @@
+<script setup lang="ts">
+
+defineProps<{
+	count?: number
+}>();
+
+const coinImage = 'https://banner2.cleanpng.com/20231219/qqa/transparent-dollar-sign-golden-coin-with-dollar-sign-on-cloudy-1710967634306.webp';
+
+</script>
 <template>
   <div class="coin-counter">
     <!-- Coin Image -->
@@ -5,36 +14,19 @@
 
     <!-- Counter -->
     <div class="counter">
-      <button @click="decrement" class="counter-button">-</button>
-      <span class="counter-value">{{ count }}</span>
-      <button @click="increment" class="counter-button">+</button>
+      <span v-if="count !== undefined" class="counter-value">{{ count }}</span>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      count: 0,
-      coinImage: 'https://banner2.cleanpng.com/20231219/qqa/transparent-dollar-sign-golden-coin-with-dollar-sign-on-cloudy-1710967634306.webp', // Replace with your coin image URL
-    };
-  },
-  methods: {
-    increment() {
-      this.count++;
-    },
-    decrement() {
-      if (this.count > 0) this.count--;
-    },
-  },
-};
-</script>
 
 <style scoped>
 .coin-counter {
   display: flex;
   align-items: center;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 25%;
+  padding: 0 10px;
 }
 
 .coin-image {
@@ -63,6 +55,7 @@ export default {
 }
 
 .counter-value {
-  font-size: 20px;
+  font-size: 30px;
+  color: rgb(0, 0, 0);
 }
 </style>

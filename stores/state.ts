@@ -1,8 +1,8 @@
-import {v4 as uuidv4} from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import type { GamePhase } from '~/server/utils/state'
 
 export const useStateStore = defineStore('state', () => {
-	
+
 	const api = useApi()
 	const { $connection } = useNuxtApp()
 
@@ -33,10 +33,12 @@ export const useStateStore = defineStore('state', () => {
 
 	const isHider = computed(() => api.userState?.room?.hiderId === userId.value)
 
+	const coinCount = computed(() => api.userState?.room?.coins[userId.value]);
+
 	const hidingEndTime = computed(() => api.userState?.room?.hidingTimeEnd ?? 0)
-	
+
 	const gameState = computed<GamePhase | undefined>(() => api.userState?.room?.gamePhase)
-	
+
 	const users = computed<InternalUser[]>(() => {
 
 		const room = api.userState?.room
@@ -62,7 +64,7 @@ export const useStateStore = defineStore('state', () => {
 
 		if (!positions) return []
 
-		return seekerIds?.map(id => ({ lat: positions[id].lat, lng: positions[id].long, name: api.userState?.userNames[id] ?? 'empty'}))
+		return seekerIds?.map(id => ({ lat: positions[id].lat, lng: positions[id].long, name: api.userState?.userNames[id] ?? 'empty' }))
 	})
 
 	const hiderPosition = computed(() => {
@@ -78,7 +80,7 @@ export const useStateStore = defineStore('state', () => {
 	})
 
 	const geo = ref<{
-		lat: number, 
+		lat: number,
 		lon: number,
 		error: string,
 		last: Date
@@ -86,7 +88,7 @@ export const useStateStore = defineStore('state', () => {
 	}>()
 
 	const isLeader = computed(() => api.userState?.room?.ownerId === userId.value)
-	
+
 	return {
 		username,
 		userId,
@@ -99,6 +101,7 @@ export const useStateStore = defineStore('state', () => {
 		seekerPositions,
 		hiderPosition,
 		geo,
+		coinCount,
 		isLeader,
 	}
 })

@@ -16,13 +16,18 @@ const MAX_ROOM_SIZE = 10;
 const HIDING_DURATION = 15 * 60 * 1000;
 const MAX_HIDER_FOUND_DURATION = 0.5 * 60 * 1000;
 
+const INITIAL_COIN_COUNT = 50;
+const QUESTION_COST = 10;
+const COINT_INCREMENT_INTERVAL = 60 * 1000;
+
 type Room = {
     id: string,
     ownerId: string,
     userIds: string[],
     hiderId: string,
     gamePhase: GamePhase,
-    positions: Record<string, Position>
+    positions: Record<string, Position>,
+    coins: Record<string, number>,
     hidingTimeEnd?: number,
     hiderFoundTime?: number,
     questions: Question[],
@@ -50,6 +55,7 @@ export const questions = [
     "Are there flyers or posters on the walls near you?",
     "If I yelled your name right now, would you hear me?",
     "Can I get to your location without using stairs?",
+    "Which is the nearest cafeteria?",
 ]
 
 export enum GamePhase {
@@ -73,10 +79,12 @@ export class State {
     private users: User[];
     private compasses: Compass[];
     private rooms: Room[];
+    private intervals: Record<string, NodeJS.Timeout>;
     constructor() {
         this.users = [];
         this.compasses = [];
         this.rooms = [];
+        this.intervals = {};
     }
 
     private getUserByPeerId(peerId: string): User | undefined {
@@ -111,6 +119,10 @@ export class State {
     }
 
     private removeRoom(room: Room) {
+        const interval = this.intervals[room.id];
+        if (interval !== undefined) {
+            clearInterval(interval);
+        }
         const index = this.rooms.findIndex(r => r === room);
         this.rooms.splice(index, 1);
     }
@@ -245,6 +257,7 @@ export class State {
             userIds: [user.id],
             hiderId: user.id,
             gamePhase: GamePhase.LOBBY,
+            coins: {},
             positions: {},
             questions: [],
         }
@@ -350,6 +363,9 @@ export class State {
 
         room.gamePhase = GamePhase.HIDING;
         room.hidingTimeEnd = Date.now() + HIDING_DURATION;
+        for (const userId of room.userIds) {
+            room.coins[userId] = INITIAL_COIN_COUNT;
+        }
     }
 
     startSeekingPhase(peerId: string) {
@@ -364,7 +380,25 @@ export class State {
             return;
         }
 
+        this._startSeekingPhase(room)
+    }
+
+    private _startSeekingPhase(room: Room) {
+        room.hidingTimeEnd = Date.now();
         room.gamePhase = GamePhase.SEEKING;
+
+        this.intervals[room.id] = setInterval(() => {
+            this.incrementCoins(room);
+        }, COINT_INCREMENT_INTERVAL);
+    }
+
+    private incrementCoins(room: Room) {
+        if (room.gamePhase !== GamePhase.SEEKING) {
+            return;
+        }
+        for (const userId of room.userIds) {
+            room.coins[userId] += 1;
+        }
     }
 
     updateTimers() {
@@ -375,7 +409,7 @@ export class State {
                     throw Error("Unreachable state: game phase hiding but no timer")
                 }
                 if (now > room.hidingTimeEnd) {
-                    room.gamePhase = GamePhase.SEEKING;
+                    this._startSeekingPhase(room);
                 }
             } else if (room.gamePhase === GamePhase.HIDER_FOUND) {
                 if (room.hiderFoundTime === undefined) {
@@ -433,7 +467,13 @@ export class State {
             return;
         }
 
+        if ((room.coins[user.id] ?? 0) <= 0) {
+            console.error(`You don't have enough coins to ask a question`);
+            return;
+        }
+
         room.questions.push({ question, answer: undefined });
+        room.coins[user.id] -= QUESTION_COST;
     }
 
     answerQuestion(peerId: string, question: string, answer: string) {
