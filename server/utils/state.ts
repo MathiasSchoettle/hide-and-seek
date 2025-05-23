@@ -13,6 +13,7 @@ type Compass = {
 }
 
 const MAX_ROOM_SIZE = 10;
+const HIDING_DURATION = 15 * 60 * 1000;
 
 type Room = {
     id: string,
@@ -21,6 +22,7 @@ type Room = {
     hiderId: string,
     gamePhase: GamePhase,
     positions: Record<string, Position>
+    hidingTimeEnd?: number,
 }
 
 export enum GamePhase {
@@ -292,6 +294,56 @@ export class State {
             return;
         }
         room.hiderId = hiderId;
+        if (user.peer !== undefined) {
+            this.sendUserState(user.id, user.peer);
+        }
+    }
+
+    startGame(peerId: string) {
+        const user = this.getUserByPeerId(peerId);
+        if (user === undefined) {
+            return;
+        }
+        const room = this.getRoomByUserId(user.id);
+
+        // only the owner is allowed to do this and only if the game has not started.
+        if (room === undefined || room.ownerId !== user.id || room.gamePhase !== GamePhase.LOBBY) {
+            return;
+        }
+
+        room.gamePhase = GamePhase.HIDING;
+        room.hidingTimeEnd = Date.now() + HIDING_DURATION;
+    }
+
+    startSeekingPhase(peerId: string) {
+        const user = this.getUserByPeerId(peerId);
+        if (user === undefined) {
+            return;
+        }
+        const room = this.getRoomByUserId(user.id);
+
+        // only the hider is allowed to do this and only if the game phase is HIDING
+        if (room === undefined || room.hiderId !== user.id || room.gamePhase !== GamePhase.HIDING) {
+            return;
+        }
+
+        room.gamePhase = GamePhase.SEEKING;
+    }
+
+    updateTimers() {
+        const now = Date.now();
+        for (const room of this.rooms) {
+            if (room.gamePhase !== GamePhase.HIDING) {
+                continue;
+            }
+            if (room.hidingTimeEnd === undefined) {
+                throw Error("Unreachble state: game phase hiding but no timer")
+            }
+
+            if (now > room.hidingTimeEnd) {
+                room.gamePhase = GamePhase.SEEKING;
+            }
+        }
     }
 }
 
