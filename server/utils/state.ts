@@ -97,6 +97,11 @@ export class State {
     }
 
     connectCompass(userId: string, peer: Peer): void {
+        const compass = this.compasses.find(c => c.userId === userId);
+        if (compass !== undefined) {
+            compass.peer = peer;
+            return;
+        }
         this.compasses.push({
             userId,
             peer,
@@ -121,8 +126,7 @@ export class State {
     }
 
     private disconnectCompass(compass: Compass) {
-        const index = this.compasses.indexOf(compass);
-        this.compasses.splice(index, 1);
+        compass.peer = undefined;
     }
 
     private disconnectUser(user: User) {
