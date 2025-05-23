@@ -1,62 +1,57 @@
 <script setup lang="ts">
-import type { Question } from '~/server/utils/state';
-import { SKIP_QUESTION_COST } from '~/server/utils/state'
+import { questions, type QuestionString} from '~/server/utils/state'
 
 const api = useApi()
 const stateStore = useStateStore()
 
-const questions = computed(() => api.userState?.room?.questions ?? [])
+const messages = computed(() => api.userState?.room?.questions ?? [])
 
-const temp = ref<Question[]>()
-
-onMounted(() => {
-	temp.value = [
-		{
-			question: 'lkds löjkdflökjsdflökjsdflkjsd ölfjslödkfjlskdjf löksdjfl ksdjlfök jsdlfjsldkj flksjdflk jsflkjs',
-			answer: ' sdlkdsjf lsjkdf lsdfj ksjf lksjfl ksdjflkdsjflk jsdlkfj slfj sldkjf lskj dflksjf lk'
-		},
-		{
-			question: 'lkds löjkdflökjsdflökjsdflkjsd ölfjslödkfjlskdjf löksdjfl ksdjlfök jsdlfjsldkj flksjdflk jsflkjs',
-			answer: undefined
-		},
-	]
+const questionsToAsk = computed(() => {
+	return Object.values(questions).filter(q => !messages.value.find(m => m.question === q))
 })
 
-const sendDisabled = computed(() => temp.value?.at(-1)?.answer !== undefined )
-const skipDisabled = computed(() => stateStore.coinCount >= SKIP_QUESTION_COST)
+function doAskQuestion(question: QuestionString) {
+	if (!disableInput) {
+		api.askQuestion(question)
+	}
+	open.value = false
+}
 
-const textinput = ref('')
+const disableInput = computed(() => messages.value.at(-1)?.answer === undefined)
 
+const open = ref(false)
 
 </script>
 
 <template>
 	<div class="h-full w-full flex flex-col p-4 gap-2 bg-neutral-900">
-		<div class="grow w-full overflow-hidden">
+
+		<div class="h-full w-full overflow-hidden">
 			<div class="h-full flex flex-col gap-2 overflow-scroll">
-
-				<template v-for="(question, index) in temp" :key="index">
-					<div class="p-2 rounded-md max-w-3/5 flex flex-col bg-neutral-700 mr-auto">
-						{{ question.answer }}
-					</div>
-
-					<div class="ml-auto" v-if="question.answer === undefined">
-						<UiButton @click="handleSkip" :disabled="skipDisabled" leading-icon="i-lucide-chevrons-right">Skip for {{ SKIP_QUESTION_COST }}</UiButton>
-					</div>
-
-					<div v-else-if="question.answer === null" class="p-2 rounded-md max-w-3/5 flex flex-col bg-neutral-500 ml-auto italic">
-						Skipped
+				<template v-for="(question, index) in messages" :key="index">
+					<div v-if="question.answer !== undefined" class="p-2 rounded-md max-w-3/5 flex flex-col bg-neutral-700 mr-uto">
+						{{ question.answer ?? 'Skipped' }}
 					</div>
 
 					<div v-else class="p-2 rounded-md max-w-3/5 flex flex-col bg-neutral-500 ml-auto">
-						{{ question.answer }}
+						{{ question.question }}
 					</div>
 				</template>
 			</div>
 		</div>
 
 		<div class="w-full flex gap-4">
+			  <UiPopover v-model:open="open">
+				<UiButton :disabled="disableInput" @click="open = true" :ui="{ base: 'w-full text-center'}" label="Open" color="neutral" variant="subtle" />
 
+				<template #content>
+					<div class="flex flex-col gap-2 h-80 overflow-y-scroll">
+						<div @click="doAskQuestion(askQuestion)" class="w-full p-3 hover:bg-neutral-700 text-sm" v-for="(askQuestion, index) in questionsToAsk">
+							{{ askQuestion }}
+						</div>
+					</div>
+				</template>
+			</UiPopover>
 		</div>
 	</div>
 </template>

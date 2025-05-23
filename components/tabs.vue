@@ -32,10 +32,10 @@ const items: TabsItem[] = [
 				:is-hider="stateStore.isHider"
 			/>
 
-			<template v-show="index === '1'">
-				<HiderChat v-if="stateStore.isHider"/>
+			<div class="w-full h-full" v-show="index === '1'">
+				<HiderChat v-if="false"/>
 				<SeekerChat v-else/>
-			</template>
+			</div>
 
 		</div>
 

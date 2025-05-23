@@ -1,6 +1,5 @@
 
 <script setup lang="ts">
-import type { Question } from '~/server/utils/state';
 import { SKIP_QUESTION_COST } from '~/server/utils/state'
 
 const api = useApi()
@@ -9,34 +8,27 @@ const stateStore = useStateStore()
 
 const questions = computed(() => api.userState?.room?.questions ?? [])
 
-const temp = ref<Question[]>()
-
-onMounted(() => {
-	temp.value = [
-		{
-			question: 'lkds löjkdflökjsdflökjsdflkjsd ölfjslödkfjlskdjf löksdjfl ksdjlfök jsdlfjsldkj flksjdflk jsflkjs',
-			answer: ' sdlkdsjf lsjkdf lsdfj ksjf lksjfl ksdjflkdsjflk jsdlkfj slfj sldkjf lskj dflksjf lk'
-		},
-		{
-			question: 'lkds löjkdflökjsdflökjsdflkjsd ölfjslödkfjlskdjf löksdjfl ksdjlfök jsdlfjsldkj flksjdflk jsflkjs',
-			answer: undefined
-		},
-	]
-})
-
-const sendDisabled = computed(() => temp.value?.at(-1)?.answer !== undefined )
+const sendDisabled = computed(() => questions.value?.at(-1)?.answer !== undefined )
 const skipDisabled = computed(() => stateStore.coinCount >= SKIP_QUESTION_COST)
 
 const textinput = ref('')
 
 function handleSend() {
+	const q = questions.value?.at(-1)?.question
+
+	if (q) {
+		api.answerQuestion(q, textinput.value)
+	}
+
 	textinput.value = ''
-	// todo  send
 }
 
 function handleSkip() {
-	console.log('skip')
-	// handle skip
+	const q = questions.value?.at(-1)?.question
+
+	if (q) {
+		api.answerQuestion(q, null)
+	}
 }
 
 </script>
@@ -46,7 +38,7 @@ function handleSkip() {
 		<div class="grow w-full overflow-hidden">
 			<div class="h-full flex flex-col gap-2 overflow-scroll">
 
-				<template v-for="(question, index) in temp" :key="index">
+				<template v-for="(question, index) in questions" :key="index">
 					<div class="p-2 rounded-md max-w-3/5 flex flex-col bg-neutral-700 mr-auto">
 						{{ question.question }}
 					</div>
