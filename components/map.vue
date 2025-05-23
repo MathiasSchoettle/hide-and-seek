@@ -1,10 +1,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import L from 'leaflet'
-import 'leaflet.markercluster'
 import { LMap, LTileLayer, LMarker, LIcon } from '@vue-leaflet/vue-leaflet'
-
-window.L = L // Make Leaflet global for markercluster
 
 const props = defineProps<{
 	hider_location: { lat: number; lng: number }
