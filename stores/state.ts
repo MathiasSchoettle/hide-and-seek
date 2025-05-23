@@ -27,7 +27,7 @@ export const useStateStore = defineStore('state', () => {
 				id: id,
 				username: usernames[id],
 				isOwner: room.ownerId === id,
-				isHider: false, // TOOD
+				isHider: room.hiderId === id
 			}
 		})
 	})
