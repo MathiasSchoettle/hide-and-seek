@@ -39,7 +39,7 @@ type Room = {
     mapCircles: MapCircle[],
 }
 
-type Question = {
+export type Question = {
     question: string,
     answer: string | undefined | null,
 }

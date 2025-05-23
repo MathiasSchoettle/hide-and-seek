@@ -34,10 +34,10 @@ export const useStateStore = defineStore('state', () => {
 	const coinCount = computed(() => {
 		const room = api.userState?.room;
 		if (room === undefined || isHider.value === undefined) {
-			return undefined;
+			return 0;
 		}
 
-		return isHider.value ? room.nHiderCoins : room.nSeekerCoins;
+		return (isHider.value ? room.nHiderCoins : room.nSeekerCoins) ?? 0
 	});
 
 	const hidingEndTime = computed(() => api.userState?.room?.hidingTimeEnd ?? 0)

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui';
 
-const coins = ref(123)
+const stateStore = useStateStore()
+
 const index = ref('0')
 
 const hiders = { lat: 49.00252018672146, lng: 12.100188665384959, name: 'Schmiddy' }
@@ -41,7 +42,7 @@ const items: TabsItem[] = [
 			<UiTabs v-model="index"  :items="items" size="xl" :content="false" :ui="{ root: 'p-1 gap-1', list: 'rounded-none bg-transparent', trigger: 'px-5' }"/>
 
 			<div class="flex justify-center items-center p-3 gap-2">
-				<span class="font-bold text-xl font-mono">{{ coins }}</span>
+				<span class="font-bold text-xl font-mono">{{ stateStore.coinCount }}</span>
 				<UiIcon name="i-lucide-coins" :size="24"/>
 			</div>
 		</div>
