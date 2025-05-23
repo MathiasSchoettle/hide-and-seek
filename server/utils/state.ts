@@ -12,13 +12,15 @@ type Compass = {
     peer?: Peer,
 }
 
-const MAX_ROOM_SIZE = 10;
-const HIDING_DURATION = 15 * 60 * 1000;
-const MAX_HIDER_FOUND_DURATION = 0.5 * 60 * 1000;
+export const MAX_ROOM_SIZE = 10;
+export const HIDING_DURATION = 15 * 60 * 1000;
+export const MAX_HIDER_FOUND_DURATION = 0.5 * 60 * 1000;
 
-const INITIAL_COIN_COUNT = 50;
-const QUESTION_COST = 10;
-const COINT_INCREMENT_INTERVAL = 60 * 1000;
+export const INITIAL_COIN_COUNT = 50;
+export const QUESTION_COST = 10;
+export const COINT_INCREMENT_INTERVAL = 60 * 1000;
+
+export const SKIP_QUESTION_COST = 35;
 
 type Room = {
     id: string,
@@ -32,11 +34,12 @@ type Room = {
     hidingTimeEnd?: number,
     hiderFoundTime?: number,
     questions: Question[],
+    mapCircles: MapCircle[],
 }
 
 type Question = {
     question: string,
-    answer?: string,
+    answer: string | undefined | null,
 }
 
 export const questions = [
@@ -75,6 +78,26 @@ export type UserState = {
     room?: Room,
     userNames: Record<string, string>,
 };
+
+export enum MapCircleType {
+    SMOKE_BOMB = "smoke_bomb",
+    FREEZE_BOMB = "freeze_bomb",
+}
+
+const getMapCircleDuration = (type: MapCircleType) => {
+    return 5 * 60 * 1000;
+}
+
+const getMapCircleRadius = (type: MapCircleType) => {
+    return 100; // meters
+}
+
+export type MapCircle = {
+    type: MapCircleType,
+    position: Position,
+    radius: number,
+    activeUntil: number,
+}
 
 export class State {
     private users: User[];
@@ -262,6 +285,7 @@ export class State {
             nSeekerCoins: INITIAL_COIN_COUNT,
             positions: {},
             questions: [],
+            mapCircles: [],
         }
         this.rooms.push(room)
     }
@@ -409,6 +433,9 @@ export class State {
                 if (now > room.hidingTimeEnd) {
                     this._startSeekingPhase(room);
                 }
+            } else if (room.gamePhase === GamePhase.SEEKING) {
+                // update circles
+                room.mapCircles = room.mapCircles.filter(circle => now <= circle.activeUntil);
             } else if (room.gamePhase === GamePhase.HIDER_FOUND) {
                 if (room.hiderFoundTime === undefined) {
                     throw Error("Unreachable state: game phase HIDER_FOUND but no found time")
@@ -474,7 +501,7 @@ export class State {
         room.nSeekerCoins -= QUESTION_COST;
     }
 
-    answerQuestion(peerId: string, question: string, answer: string) {
+    answerQuestion(peerId: string, question: string, answer: string | null) {
         const user = this.getUserByPeerId(peerId);
         if (user === undefined) {
             return;
@@ -498,7 +525,37 @@ export class State {
             return;
         }
 
+        if (answer === null) {
+            if (room.nHiderCoins < SKIP_QUESTION_COST) {
+                console.error(`Not enough coins to skip question`);
+                return;
+            }
+            room.nHiderCoins -= SKIP_QUESTION_COST;
+        }
         roomQuestion.answer = answer;
+    }
+
+    addMapCircle(peerId: string, type: MapCircleType, position: Position) {
+        const user = this.getUserByPeerId(peerId);
+        if (user === undefined) {
+            return;
+        }
+        const room = this.getRoomByUserId(user.id);
+
+        // only hiders can do this and only in seeking phase
+        if (room === undefined || room.hiderId !== user.id || room.gamePhase !== GamePhase.SEEKING) {
+            console.error(`User ${user.id} cannot perform "addMapCircle" in room ${JSON.stringify(room)}`)
+            return;
+        }
+
+        const circle: MapCircle = {
+            type,
+            position,
+            activeUntil: Date.now() + getMapCircleDuration(type),
+            radius: getMapCircleRadius(type),
+        }
+
+        room.mapCircles.push(circle);
     }
 }
 

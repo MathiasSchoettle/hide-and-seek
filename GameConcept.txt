@@ -6,7 +6,7 @@ The hider can cast one spell (each lasting 5 minutes) per minute at maximum:
 	- Freeze Seeker (-15 coins): Seeker cannot ask questions until he's defrosted and everything he does is slowed down in update for other seekers to once per minute
 	- Freeze Area (-25 coins): Seekers can easily catch a cold in this area and can only look at the positions of other seekers once per minute. Also any updates (questions) are slowed down to once per minute
 	- Smoke Bomb (-30 coins): Any position in the smoke bomb area is not shown on the map for seekers
-	- Opposite Answer (-50 coins): The hiders answer can be different from the truth for a single question
+	- Skip Question (-35 coins): The hiders answer can be different from the truth for a single question
 
 
 - Show own position on a random large circle for a brief moment to all seekers (+100 coins)

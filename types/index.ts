@@ -1,4 +1,4 @@
-import type { Position, UserState } from "~/server/utils/state"
+import type { MapCircleType, Position, UserState } from "~/server/utils/state"
 
 // type for all allowed messages from client to server
 export type ClientMessage = {
@@ -19,6 +19,7 @@ export type ClientMessage = {
 	| { type: "hiderFoundEvent", value: HiderFoundEvent }
 	| { type: "askQuestionEvent", value: AskQuestionEvent }
 	| { type: "answerQuestionEvent", value: AnswerQuestionEvent }
+	| { type: "addMapCircle", value: AddMapCircleEvent }
 }
 export type ClientPayload = ClientMessage['message']
 
@@ -49,7 +50,7 @@ export type AskQuestionEvent = {
 }
 export type AnswerQuestionEvent = {
 	question: string,
-	answer: string,
+	answer: string | null,
 }
 
 export type SetHiderEvent = {
@@ -58,6 +59,11 @@ export type SetHiderEvent = {
 
 export type PositionEvent = {
 	postiion: Position
+}
+
+export type AddMapCircleEvent = {
+	type: MapCircleType,
+	position: Position
 }
 
 // type for all allowed messages from server to client

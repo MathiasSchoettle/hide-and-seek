@@ -1,4 +1,4 @@
-import { ClientPayload, MoinRequest, JoinRoomRequest, LeaveRoomEvent, ServerMessage, ServerPayload, CreateRoomRequest, CloseRoomEvent, CompassMoinRequest, PositionEvent, SetHiderEvent, GameStartEvent, HiderFoundEvent, GameFinishEvent, AskQuestionEvent, AnswerQuestionEvent } from "~/types";
+import { ClientPayload, MoinRequest, JoinRoomRequest, LeaveRoomEvent, ServerMessage, ServerPayload, CreateRoomRequest, CloseRoomEvent, CompassMoinRequest, PositionEvent, SetHiderEvent, GameStartEvent, HiderFoundEvent, GameFinishEvent, AskQuestionEvent, AnswerQuestionEvent, AddMapCircleEvent } from "~/types";
 import { Peer } from 'crossws'
 import { state } from "./state";
 
@@ -71,6 +71,9 @@ async function onAskQuestion(message: AskQuestionEvent, peer: Peer): Promise<und
 async function onAnswerQuestion(message: AnswerQuestionEvent, peer: Peer): Promise<undefined> {
 	state.answerQuestion(peer.id, message.question, message.answer);
 }
+async function onAddMapCircle(message: AddMapCircleEvent, peer: Peer): Promise<undefined> {
+	state.addMapCircle(peer.id, message.type, message.position);
+}
 
 
 const commandRegistry: {
@@ -89,6 +92,7 @@ const commandRegistry: {
 	hiderFoundEvent: onHiderFound,
 	askQuestionEvent: onAskQuestion,
 	answerQuestionEvent: onAnswerQuestion,
+	addMapCircle: onAddMapCircle,
 };
 
 
