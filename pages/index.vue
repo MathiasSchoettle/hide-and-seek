@@ -24,6 +24,7 @@ const { coords } = useGeolocation({enableHighAccuracy: true})
 		<div class="bg-white absolute top-5 right-5 whitespace-pre-wrap text-black z-[500]">
 			{{ JSON.stringify(stateStore.geo, null, 2) }}
 			websocket status: {{ $connection.status }}
+			{{ JSON.stringify(stateStore.seekerPositions) }}
 		</div>
 
 		<UsernameInput v-if="!stateStore.username"/>
