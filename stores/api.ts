@@ -88,6 +88,20 @@ export const useApi = defineStore('api', () => {
 		})
 	}
 
+	function sendGeoData(lat: number, long: number) {
+		$connection.sendEvent({
+			message: {
+				type: 'positionEvent',
+				value: {
+					postiion:  {
+						lat: lat,
+						long: long
+					}
+				}
+			}
+		})
+	}
+
 	return {
 		sayMoin,
 		createNewRoom,
@@ -95,6 +109,7 @@ export const useApi = defineStore('api', () => {
 		leaveRoom,
 		closeRoom,
 		setHider,
+		sendGeoData,
 
 		userState
 	}
