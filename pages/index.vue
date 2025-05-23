@@ -23,6 +23,7 @@ const { coords } = useGeolocation({enableHighAccuracy: true})
 
 		<div class="bg-white absolute top-5 right-5 whitespace-pre-wrap text-black z-[100]">
 			{{ JSON.stringify(coords, null, 2) }}
+			{{ stateStore.pos }}
 		</div>
 
 		<UsernameInput v-if="!stateStore.username"/>

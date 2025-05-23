@@ -69,6 +69,8 @@ export const useStateStore = defineStore('state', () => {
 		api.sayMoin(userId.value, username.value)
 	})
 
+	const pos = ref<{lat: number, lon: number }>()
+
 	return {
 		username,
 		userId,
@@ -80,6 +82,7 @@ export const useStateStore = defineStore('state', () => {
 		isHider,
 		seekerPositions,
 		hiderPosition,
+		pos,
 	}
 })
 
