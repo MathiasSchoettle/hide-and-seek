@@ -8,7 +8,7 @@ export default defineNuxtPlugin(() => {
 	const protocol = import.meta.dev ? 'ws' : 'wss'
 
 	const { host } = useRequestURL()
-	const { status, data, send, open } = useWebSocket(`${protocol}://${host}/api/websocket`)
+	const { status, data, send, open } = useWebSocket(`${protocol}://${host}/api/websocket`, { autoReconnect: true })
 
 	let nextId: bigint = 0n
 
@@ -58,6 +58,7 @@ export default defineNuxtPlugin(() => {
 
 	const connection = {
 		lastMessage,
+		status,
 
 		sendEvent,
 		sendRequest
