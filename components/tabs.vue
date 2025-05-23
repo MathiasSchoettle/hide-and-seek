@@ -27,7 +27,7 @@ const items: TabsItem[] = [
 			/>
 
 			<div class="w-full h-full" v-show="index === '1'">
-				<HiderChat v-if="false"/>
+				<HiderChat v-if="stateStore.isHider"/>
 				<SeekerChat v-else/>
 			</div>
 

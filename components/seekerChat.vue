@@ -17,7 +17,7 @@ function doAskQuestion(question: QuestionString) {
 	open.value = false
 }
 
-const disableInput = computed(() => messages.value.at(-1)?.answer === undefined)
+const disableInput = computed(() => messages.value.at(-1)?.answer !== undefined)
 
 const open = ref(false)
 
