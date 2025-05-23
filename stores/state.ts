@@ -4,6 +4,7 @@ import type { GamePhase } from '~/server/utils/state'
 export const useStateStore = defineStore('state', () => {
 	
 	const api = useApi()
+	const { $connection } = useNuxtApp()
 
 	const username = useLocalStorage('username', '')
 	const userId = useLocalStorage('userId', uuidv4())
@@ -13,6 +14,18 @@ export const useStateStore = defineStore('state', () => {
 	watch(() => api.userState, () => {
 		if (waitingForUpdate.value) {
 			waitingForUpdate.value = false
+		}
+	})
+
+
+
+	watchEffect(() => {
+		if (
+			$connection.status.value === 'OPEN' ||
+			!!username.value ||
+			!!userId.value
+		) {
+			api.sayMoin(userId.value, username.value)
 		}
 	})
 
@@ -62,11 +75,6 @@ export const useStateStore = defineStore('state', () => {
 
 	watch(() => api.userState, (state) => {
 		// maybe something else
-	})
-
-	until(username).toBeTruthy().then(() => {
-		console.debug('CONNECTED')
-		api.sayMoin(userId.value, username.value)
 	})
 
 	const geo = ref<{
