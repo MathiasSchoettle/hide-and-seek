@@ -3,11 +3,11 @@ import type { TabsItem } from '@nuxt/ui';
 
 const stateStore = useStateStore()
 
+
 const index = ref('0')
 
 const hiders = { lat: 49.00252018672146, lng: 12.100188665384959, name: 'Schmiddy' }
 const seekers = [{ lat: 49.00245411928066, lng: 12.097421476143023, name: 'Schmaddes'}]
-const isHider = ref(false)
 
 const items: TabsItem[] = [
 	{
@@ -29,12 +29,13 @@ const items: TabsItem[] = [
 				v-show="index === '0'"
 				:hider="hiders"
 				:seekers="seekers"
-				:is-hider="isHider"
+				:is-hider="stateStore.isHider"
 			/>
 
-			<Chat
-				v-show="index === '1'"
-			/>
+			<template v-show="index === '1'">
+				<HiderChat v-if="stateStore.isHider"/>
+				<SeekerChat v-else/>
+			</template>
 
 		</div>
 

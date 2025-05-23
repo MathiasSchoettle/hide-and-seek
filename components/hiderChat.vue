@@ -27,12 +27,16 @@ onMounted(() => {
 const messages = ref()
 
 const sendDisabled = computed(() => temp.value?.at(-1)?.answer !== undefined )
-const skipDisabled = computed(() => stateStore.coinCount < SKIP_QUESTION_COST)
-
-const textinput = ref('')
+const skipDisabled = computed(() => stateStore.coinCount >= SKIP_QUESTION_COST)
 
 function handleSend() {
 	textinput.value = ''
+	// todo  send
+}
+
+function handleSkip() {
+	console.log('skip')
+	// handle skip
 }
 
 </script>
@@ -48,7 +52,7 @@ function handleSend() {
 					</div>
 
 					<div class="ml-auto" v-if="question.answer === undefined">
-						<UiButton :disabled="skipDisabled" leading-icon="i-lucide-chevrons-right">Skip for {{ SKIP_QUESTION_COST }}</UiButton>
+						<UiButton @click="handleSkip" :disabled="skipDisabled" leading-icon="i-lucide-chevrons-right">Skip for {{ SKIP_QUESTION_COST }}</UiButton>
 					</div>
 
 					<div v-else-if="question.answer === null" class="p-2 rounded-md max-w-3/5 flex flex-col bg-neutral-500 ml-auto italic">
@@ -64,7 +68,7 @@ function handleSend() {
 
 		<div class="w-full flex gap-4">
 			<UiInput v-model="textinput" :disabled="sendDisabled" size="xl" :ui="{ root: 'grow' }" type="text"/>
-			<UiButton :disabled="sendDisabled" :ui="{ base: 'px-5', trailingIcon: 'text-4xl' }" size="sm" trailing-icon="i-lucide-send-horizontal"></UiButton>
+			<UiButton @click="handleSend" :disabled="sendDisabled" :ui="{ base: 'px-5', trailingIcon: 'text-4xl' }" size="sm" trailing-icon="i-lucide-send-horizontal"></UiButton>
 		</div>
 	</div>
 </template>
