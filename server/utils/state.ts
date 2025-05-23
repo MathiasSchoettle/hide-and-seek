@@ -85,7 +85,7 @@ export type UserState = {
 export enum MapCircleType {
     SMOKE_BOMB = "smoke_bomb",
     FREEZE_BOMB = "freeze_bomb",
-    SEEKERS_FORTUNE = "seekers_fortnue"
+    SEEKERS_FORTUNE = "seekers_fortune"
 }
 
 export const getMapCircleDuration = (type: MapCircleType): number => {

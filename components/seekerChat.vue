@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { questions, type QuestionString} from '~/server/utils/state'
+import { questions, type QuestionString, QUESTION_COST} from '~/server/utils/state'
 
 const api = useApi()
 const stateStore = useStateStore()
@@ -19,7 +19,7 @@ function doAskQuestion(question: QuestionString) {
 
 const lastQ = computed(() => messages.value.at(-1))
 
-const disableInput = computed(() => lastQ.value?.answer === undefined && lastQ.value?.question !== undefined)
+const disableInput = computed(() => lastQ.value?.answer === undefined && lastQ.value?.question !== undefined || stateStore.coinCount < QUESTION_COST)
 
 const open = ref(false)
 

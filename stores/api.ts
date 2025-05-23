@@ -1,4 +1,4 @@
-import type { QuestionString } from "~/server/utils/state"
+import type { MapCircleType, Position, QuestionString } from "~/server/utils/state"
 import type { ClientMessage, CreateRoomResponse, JoinRoomResponse, MoinMoinResponse, ServerMessage } from "~/types"
 
 // could this be a composable?
@@ -81,6 +81,18 @@ export const useApi = defineStore('api', () => {
 				}
 			}
 		});
+	}
+
+	function addMapCircle(type: MapCircleType, position: Position) {
+		$connection.sendEvent({
+			message: {
+				type: "addMapCircle",
+				value: {
+					type,
+					position,
+				}
+			}
+		})
 	}
 
 	function leaveRoom() {
@@ -166,6 +178,7 @@ export const useApi = defineStore('api', () => {
 		wasFound,
 		askQuestion,
 		answerQuestion,
+		addMapCircle,
 
 		userState
 	}
