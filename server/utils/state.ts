@@ -23,6 +23,7 @@ type Room = {
     gamePhase: GamePhase,
     positions: Record<string, Position>
     hidingTimeEnd?: number,
+    hiderFoundTime?: number,
 }
 
 export enum GamePhase {
@@ -348,6 +349,26 @@ export class State {
                 room.gamePhase = GamePhase.SEEKING;
             }
         }
+    }
+
+    hiderFound(peerId: string) {
+        const user = this.getUserByPeerId(peerId);
+        if (user === undefined) {
+            return;
+        }
+
+        const room = this.getRoomByUserId(user.id);
+        if (room === undefined) {
+            return;
+        }
+
+        // only the hider is allowed to do this and only if the game phase is SEEKING
+        if (room === undefined || room.hiderId !== user.id || room.gamePhase !== GamePhase.SEEKING) {
+            return;
+        }
+
+        room.gamePhase = GamePhase.HIDER_FOUND;
+        room.hiderFoundTime = Date.now();
     }
 }
 

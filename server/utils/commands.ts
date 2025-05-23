@@ -1,4 +1,4 @@
-import { ClientPayload, MoinRequest, JoinRoomRequest, LeaveRoomEvent, ServerMessage, ServerPayload, CreateRoomRequest, CloseRoomEvent, CompassMoinRequest, PositionEvent, SetHiderEvent, GameStartEvent } from "~/types";
+import { ClientPayload, MoinRequest, JoinRoomRequest, LeaveRoomEvent, ServerMessage, ServerPayload, CreateRoomRequest, CloseRoomEvent, CompassMoinRequest, PositionEvent, SetHiderEvent, GameStartEvent, HiderFoundEvent } from "~/types";
 import { Peer } from 'crossws'
 import { state } from "./state";
 
@@ -62,6 +62,10 @@ async function onGameStart(message: GameStartEvent, peer: Peer): Promise<undefin
 async function onStartSeekingPhase(message: GameStartEvent, peer: Peer): Promise<undefined> {
 	state.startSeekingPhase(peer.id);
 }
+async function onHiderFound(message: HiderFoundEvent, peer: Peer): Promise<undefined> {
+	state.startSeekingPhase(peer.id);
+}
+
 
 const commandRegistry: {
 	[K in ClientPayload as K['type']]: MessageHandler<K['value']>
@@ -75,7 +79,8 @@ const commandRegistry: {
 	positionEvent: onPosition,
 	setHiderEvent: onSetHider,
 	gameStartEvent: onGameStart,
-	startSeekingPhaseEvent: onStartSeekingPhase
+	startSeekingPhaseEvent: onStartSeekingPhase,
+	hiderFoundEvent: onHiderFound,
 };
 
 

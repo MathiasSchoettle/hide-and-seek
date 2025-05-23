@@ -15,7 +15,8 @@ export type ClientMessage = {
 	| { type: 'setHiderEvent', value: SetHiderEvent }
 	| { type: 'positionEvent', value: PositionEvent }
 	| { type: 'gameStartEvent', value: GameStartEvent }
-	| { type: "startSeekingPhaseEvent", value: StartSeekingPhaseEvent },
+	| { type: "startSeekingPhaseEvent", value: StartSeekingPhaseEvent }
+	| { type: "hiderFoundEvent", value: HiderFoundEvent }
 }
 export type ClientPayload = ClientMessage['message']
 
@@ -38,6 +39,7 @@ export type LeaveRoomEvent = {}
 export type CloseRoomEvent = {}
 export type GameStartEvent = {}
 export type StartSeekingPhaseEvent = {}
+export type HiderFoundEvent = {}
 
 export type SetHiderEvent = {
 	hiderId: string,
