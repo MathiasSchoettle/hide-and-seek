@@ -5,25 +5,8 @@ import { JoinRoomStatus, ServerMessage } from '~/types';
 type User = {
     id: string,
     name: string,
-    peer: Peer | undefined,
+    peer?: Peer,
 }
-
-class Users {
-    users: User[];
-    constructor() {
-        this.users = []
-    }
-    addUser(user: User): void {
-        this.users.push(user);
-    }
-    getUserById(id: string): User | undefined {
-        return this.users.find(user => user.id === id);
-    }
-    getUserByPeerId(peerId: string): User | undefined {
-        return this.users.find(user => user.peer?.id === peerId);
-    }
-}
-
 
 enum RoomStatus {
     LOBBY = "lobby",
@@ -40,7 +23,8 @@ type Room = {
 }
 
 export type UserState = {
-    room?: Room
+    room?: Room,
+    userNames: Record<string, string>,
 };
 
 export class State {
@@ -71,6 +55,16 @@ export class State {
             }
         }
     }
+    private getUserNameMapping(userIds: string[]): Record<string, string> {
+        const mapping: Record<string, string> = {};
+        for (const id of userIds) {
+            const user = this.users.find(u => u.id === id);
+            if (user !== undefined) {
+                mapping[user.id] = user.name;
+            }
+        }
+        return mapping;
+    }
 
     connectUser(id: string, name: string, peer: Peer): void {
         const user = this.getUserByPeerId(peer.id);
@@ -90,6 +84,19 @@ export class State {
             return;
         }
         user.peer = undefined;
+
+        const room = this.getRoomByUserId(user.id);
+
+        if (room === undefined) {
+            return;
+        }
+
+        // If the owner disconnects, he stays in the room
+        if (room.ownerId === user.id) {
+            return;
+        }
+
+        room.userIds.splice(room.userIds.indexOf(user.id), 1);
     }
 
     publishUserState() {
@@ -109,8 +116,19 @@ export class State {
     }
 
     getUserState(user: User): UserState {
+        const relevantUserIds = new Set<string>();
+        relevantUserIds.add(user.id);
+
         const room = this.getRoomByUserId(user.id);
-        return { room }
+        if (room !== undefined) {
+            for (const id of room.userIds) {
+                relevantUserIds.add(id);
+            }
+        }
+        return {
+            room,
+            userNames: this.getUserNameMapping(Array.from(relevantUserIds))
+        };
     }
 
     createRoom(peerId: string) {

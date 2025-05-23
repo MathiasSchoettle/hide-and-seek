@@ -1,15 +1,18 @@
 import type { ClientMessage } from "~/types"
 import { handle } from "../utils/commands"
+import { state } from "../utils/state"
 
 export default defineWebSocketHandler({
-	open(peer) {
+	open(_) {
 		console.debug('open')
 	},
-	close(peer, details) {
-		console.log('closing', details)
+	close(peer, _) {
+		console.debug('close')
+		state.disconnectUser(peer.id);
 	},
 	error(peer) {
-		console.log('error')
+		console.debug('error')
+		state.disconnectUser(peer.id);
 	},
 	async message(peer, message) {
 		const clientMessage: ClientMessage = JSON.parse(message.toString())
