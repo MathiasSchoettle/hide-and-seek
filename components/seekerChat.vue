@@ -11,13 +11,15 @@ const questionsToAsk = computed(() => {
 })
 
 function doAskQuestion(question: QuestionString) {
-	if (!disableInput) {
+	if (!disableInput.value) {
 		api.askQuestion(question)
 	}
 	open.value = false
 }
 
-const disableInput = computed(() => messages.value.at(-1)?.answer !== undefined)
+const lastQ = computed(() => messages.value.at(-1))
+
+const disableInput = computed(() => lastQ.value?.answer === undefined && lastQ.value?.question !== undefined)
 
 const open = ref(false)
 
@@ -29,12 +31,12 @@ const open = ref(false)
 		<div class="h-full w-full overflow-hidden">
 			<div class="h-full flex flex-col gap-2 overflow-scroll">
 				<template v-for="(question, index) in messages" :key="index">
-					<div v-if="question.answer !== undefined" class="p-2 rounded-md max-w-3/5 flex flex-col bg-neutral-700 mr-uto">
-						{{ question.answer ?? 'Skipped' }}
-					</div>
-
-					<div v-else class="p-2 rounded-md max-w-3/5 flex flex-col bg-neutral-500 ml-auto">
+					<div v-show="question.question" class="p-2 rounded-md max-w-3/5 flex flex-col bg-neutral-500 ml-auto">
 						{{ question.question }}
+					</div>
+					
+					<div v-show="question.answer !== undefined" class="p-2 rounded-md max-w-3/5 flex flex-col bg-neutral-700 mr-auto" :class="{ 'italic': question.answer === null}">
+						{{ question.answer ?? 'Skipped' }}
 					</div>
 				</template>
 			</div>
@@ -42,7 +44,7 @@ const open = ref(false)
 
 		<div class="w-full flex gap-4">
 			  <UiPopover v-model:open="open">
-				<UiButton :disabled="disableInput" @click="open = true" :ui="{ base: 'w-full text-center'}" label="Open" color="neutral" variant="subtle" />
+				<UiButton size="xl" :disabled="disableInput" @click="open = true" :ui="{ base: 'w-full text-center'}" label="Open" color="neutral" variant="subtle" />
 
 				<template #content>
 					<div class="flex flex-col gap-2 h-80 overflow-y-scroll">

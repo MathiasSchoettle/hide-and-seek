@@ -8,8 +8,11 @@ const stateStore = useStateStore()
 
 const questions = computed(() => api.userState?.room?.questions ?? [])
 
-const sendDisabled = computed(() => questions.value?.at(-1)?.answer === undefined )
-const skipDisabled = computed(() => stateStore.coinCount >= SKIP_QUESTION_COST)
+const lastQ = computed(() => questions.value.at(-1))
+
+
+const sendDisabled = computed(() => questions.value?.at(-1)?.answer !== undefined )
+const skipDisabled = computed(() => stateStore.coinCount < SKIP_QUESTION_COST)
 
 const textinput = ref('')
 
