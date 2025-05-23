@@ -82,7 +82,7 @@ export class State {
     }
 
     connectUser(id: string, name: string, peer: Peer): void {
-        const user = this.users.find(u => u.id);
+        const user = this.users.find(u => u.id === id);
         if (user !== undefined) {
             user.peer = peer;
             return;
