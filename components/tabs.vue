@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui';
-import { MapCircleType, type MapCircle, getMapCircleRadius } from '~/server/utils/state'
 
 const stateStore = useStateStore()
+const api = useApi()
 
 const index = ref('0')
 
@@ -32,15 +32,19 @@ const items: TabsItem[] = [
 				<HiderChat v-if="stateStore.isHider"/>
 				<SeekerChat v-else/>
 			</div>
-
 		</div>
 
 		<div class="w-full flex justify-between bg-neutral-800">
-			<UiTabs v-model="index"  :items="items" size="xl" :content="false" :ui="{ root: 'p-1 gap-1', list: 'rounded-none bg-transparent', trigger: 'px-5' }"/>
+
+			<div class="flex justify-center items-center">
+				<UiTabs v-model="index"  :items="items" size="xl" :content="false" :ui="{ root: 'p-1 gap-1', list: 'rounded-none bg-transparent', trigger: 'px-5' }"/>
+			</div>
 
 			<div class="flex justify-center items-center p-3 gap-2">
 				<span class="font-bold text-xl font-mono">{{ stateStore.coinCount }}</span>
 				<UiIcon name="i-lucide-coins" :size="24"/>
+
+				<UiButton v-if="stateStore.isLeader" :ui="{ base: 'ml-4'}" @click="api.closeRoom()" color="error" icon="i-lucide-x" size="xl"></UiButton>
 			</div>
 		</div>
 </template>
