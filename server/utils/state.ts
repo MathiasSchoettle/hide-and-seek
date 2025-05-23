@@ -1,5 +1,7 @@
 import { Peer } from 'crossws';
 import { JoinRoomStatus, ServerMessage } from '~/types';
+import { getDistance } from 'geolib'
+import { GeolibInputCoordinates } from 'geolib/es/types';
 
 type User = {
     id: string,
@@ -82,21 +84,30 @@ export type UserState = {
 export enum MapCircleType {
     SMOKE_BOMB = "smoke_bomb",
     FREEZE_BOMB = "freeze_bomb",
+    SEEKERS_FORTUNE = "seekers_fortnue"
 }
 
-export const getMapCircleDuration = (type: MapCircleType) => {
-    return 5 * 60 * 1000;
+export const getMapCircleDuration = (type: MapCircleType): number => {
+    switch (type) {
+        case MapCircleType.SMOKE_BOMB:
+        case MapCircleType.FREEZE_BOMB:
+            return 5 * 60 * 1000;
+        case MapCircleType.SEEKERS_FORTUNE:
+            return 10 * 60 * 1000;
+    }
 }
 
-export const getMapCircleRadius = (type: MapCircleType) => {
+export const getMapCircleRadius = (type: MapCircleType): number => {
     return 100; // meters
 }
-export const getMapCircleCost = (type: MapCircleType) => {
+export const getMapCircleCost = (type: MapCircleType): number => {
     switch (type) {
         case MapCircleType.SMOKE_BOMB:
             return 30;
         case MapCircleType.FREEZE_BOMB:
             return 25;
+        case MapCircleType.SEEKERS_FORTUNE:
+            return -10;
     }
 }
 
@@ -429,6 +440,31 @@ export class State {
         }
         room.nHiderCoins += 1;
         room.nSeekerCoins += 1;
+        this.handleSeekersFortune(room);
+    }
+
+    private handleSeekersFortune(room: Room) {
+        for (const circle of room.mapCircles) {
+            if (circle.type !== MapCircleType.SEEKERS_FORTUNE) {
+                continue;
+            }
+            for (const userId of room.userIds) {
+                if (userId === room.hiderId) {
+                    continue;
+                }
+                const circlePosition = {
+                    lat: circle.position.lat,
+                    lon: circle.position.long,
+                }
+                const userPosition = {
+                    lat: room.positions[userId]?.lat ?? 0,
+                    lon: room.positions[userId]?.long ?? 0,
+                }
+                if (getDistance(circlePosition, userPosition) <= circle.radius) {
+                    room.nSeekerCoins += 1;
+                }
+            }
+        }
     }
 
     updateTimers() {
