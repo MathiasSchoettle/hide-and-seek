@@ -20,6 +20,7 @@ export type ClientMessage = {
 	| { type: "askQuestionEvent", value: AskQuestionEvent }
 	| { type: "answerQuestionEvent", value: AnswerQuestionEvent }
 	| { type: "addMapCircle", value: AddMapCircleEvent }
+	| { type: "buyCompass", value: BuyCompassEvent }
 }
 export type ClientPayload = ClientMessage['message']
 
@@ -44,6 +45,7 @@ export type GameStartEvent = {}
 export type StartSeekingPhaseEvent = {}
 export type HiderFoundEvent = {}
 export type GameFinishEvent = {}
+export type BuyCompassEvent = {}
 
 export type AskQuestionEvent = {
 	question: QuestionString,

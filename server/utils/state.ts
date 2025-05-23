@@ -23,6 +23,9 @@ export const COINT_INCREMENT_INTERVAL = 60 * 1000;
 
 export const SKIP_QUESTION_COST = 35;
 
+export const COMPASS_COST = 2;
+export const COMPASS_DURATION = 5 * 60 * 1000;
+
 type Room = {
     id: string,
     ownerId: string,
@@ -36,6 +39,8 @@ type Room = {
     hiderFoundTime?: number,
     questions: Question[],
     mapCircles: MapCircle[],
+    compassActive: boolean,
+    compassTimer?: number,
 }
 
 export type Question = {
@@ -306,6 +311,7 @@ export class State {
             positions: {},
             questions: [],
             mapCircles: [],
+            compassActive: false,
         }
         this.rooms.push(room)
     }
@@ -508,6 +514,10 @@ export class State {
             } else if (room.gamePhase === GamePhase.SEEKING) {
                 // update circles
                 room.mapCircles = room.mapCircles.filter(circle => now <= circle.activeUntil);
+                if (room.compassTimer !== undefined && now > room.compassTimer) {
+                    room.compassActive = false;
+                    room.compassTimer = undefined;
+                }
             } else if (room.gamePhase === GamePhase.HIDER_FOUND) {
                 if (room.hiderFoundTime === undefined) {
                     throw Error("Unreachable state: game phase HIDER_FOUND but no found time")
@@ -636,6 +646,34 @@ export class State {
 
         room.mapCircles.push(circle);
         room.nHiderCoins -= cost;
+    }
+
+    buyCompass(peerId: string) {
+        const user = this.getUserByPeerId(peerId);
+        if (user === undefined) {
+            return;
+        }
+
+        const room = this.getRoomByUserId(user.id);
+
+        // only seekers can do this and only in seeking phase
+        if (room === undefined || room.hiderId === user.id || room.gamePhase !== GamePhase.SEEKING) {
+            console.error(`User ${user.id} cannot perform "addMapCircle" in room ${JSON.stringify(room)}`);
+            return;
+        }
+
+        if (room.nSeekerCoins < COMPASS_COST) {
+            console.error(`Not enough coins to buy compass`);
+            return
+        }
+
+        if (room.compassActive) {
+            console.error("Cannot buy compass when compass is already active")
+        }
+
+        room.nSeekerCoins -= COMPASS_COST;
+        room.compassActive = true;
+        room.compassTimer = Date.now() + COMPASS_DURATION;
     }
 }
 
