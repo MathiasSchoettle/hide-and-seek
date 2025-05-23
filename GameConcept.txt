@@ -1,0 +1,35 @@
+Every Seeker and the hider get a coin every minute. Everyone starts with 50 coins.
+The hider has to answer each question from seekers correctly.
+
+
+The hider can cast one spell (each lasting 5 minutes) per minute at maximum:
+	- Freeze Seeker (-15 coins): Seeker cannot ask questions until he's defrosted and everything he does is slowed down in update for other seekers to once per minute
+	- Freeze Area (-25 coins): Seekers can easily catch a cold in this area and can only look at the positions of other seekers once per minute. Also any updates (questions) are slowed down to once per minute
+	- Smoke Bomb (-30 coins): Any position in the smoke bomb area is not shown on the map for seekers
+	- Opposite Answer (-50 coins): The hiders answer can be different from the truth for a single question
+
+
+- Show own position on a random large circle for a brief moment to all seekers (+100 coins)
+- Seekers fortune (+5 coins): Any seeker in this area gets twice as many coins per minute
+
+
+Seeker questions:
+Is your latitude higher or lower than mine?
+Is your longitude higher or lower than mine?
+
+Describe a building in your line of sight
+What is the color of the closest building to you
+What is the most dominant sound in your area?
+How long would it take to walk to the nearest bus or train station?
+
+Are you indoors?
+Are you on the main campus?
+Are on ground level
+Can you see a minimum of 5 trees from where you are?
+Are you near water?
+Do you have a strong Wifi signal?
+Are you likely to be interrupted or seen where you are?
+Are there flyers or posters on the walls near you?
+
+If I yelled your name right now, would you hear me?
+Can I get to your location without using stairs?
