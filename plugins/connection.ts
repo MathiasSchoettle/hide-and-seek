@@ -21,7 +21,7 @@ export default defineNuxtPlugin(() => {
 
 		const message: ServerMessage = JSON.parse(data.value)
 
-		console.log('RECEIVE_MESSAGE', message);
+		console.log('RECEIVE_MESSAGE', JSON.stringify(message, null, 2));
 
 		if (message.id) {
 			// the server message is a response

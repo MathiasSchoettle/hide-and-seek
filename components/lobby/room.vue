@@ -32,7 +32,7 @@ function handleSetHider(id: string) {
 		<UiSeparator/>
 
 		<div class="flex flex-col gap-2 w-full">
-			<div :class="{'cursor-pointer hover:bg-neutral-700 hover:border-neutral-600': isLeader}" class="flex gap-3 bg-neutral-800 border border-neutral-700 rounded-md items-center justify-between py-2 px-3 font-bold" v-for="user in users" :key="user.id">
+			<div @click="handleSetHider(user.id)" :class="{'cursor-pointer hover:bg-neutral-700 hover:border-neutral-600': isLeader}" class="flex gap-3 bg-neutral-800 border border-neutral-700 rounded-md items-center justify-between py-2 px-3 font-bold" v-for="user in users" :key="user.id">
 				<div class="h-full flex items-center gap-2">
 					<UiIcon name="i-lucide-user" :size="22"/>
 					<div>{{ user.username }}</div>

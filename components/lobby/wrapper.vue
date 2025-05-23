@@ -4,8 +4,6 @@ const api = useApi()
 
 const stateStore = useStateStore()
 
-
-
 </script>
 
 <template>
@@ -15,6 +13,6 @@ const stateStore = useStateStore()
 		:users="stateStore.users"
 		@close="api.closeRoom()"
 		@leave="api.leaveRoom()"
-		@make-hider=""
+		@make-hider="(hiderId) => api.setHider(hiderId)"
 	/>
 </template>

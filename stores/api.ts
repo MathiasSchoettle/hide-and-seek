@@ -77,12 +77,24 @@ export const useApi = defineStore('api', () => {
 		})
 	}
 
+	function setHider(userId: string) {
+		$connection.sendEvent({
+			message: {
+				type: 'setHiderEvent',
+				value: {
+					hiderId: userId
+				}
+			}
+		})
+	}
+
 	return {
 		sayMoin,
 		createNewRoom,
 		joinRoom,
 		leaveRoom,
 		closeRoom,
+		setHider,
 
 		userState
 	}
