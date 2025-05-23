@@ -17,6 +17,8 @@ export default defineWebSocketHandler({
 	async message(peer, message) {
 		const clientMessage: ClientMessage = JSON.parse(message.toString())
 
+		console.log(peer.id, clientMessage.message.type)
+
 		const response = await handle(clientMessage.message, peer).then(message => message)
 
 		if (response) {
