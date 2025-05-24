@@ -32,10 +32,18 @@ const items: TabsItem[] = [
 				<HiderChat v-if="stateStore.isHider"/>
 				<SeekerChat v-else/>
 			</div>
+
+			<div class="w-full h-full flex flex-col text-sm" v-show="index === '2'">
+				<span>{{ JSON.stringify(stateStore.geo, null, 2) }}</span>
+
+				<span v-for="pos in api.userState?.room?.positions">{{ JSON.stringify(pos, null, 2) }}</span>
+
+				<span>{{ $connection.status }}</span>
+
+			</div>
 		</div>
 
 		<div class="w-full flex justify-between bg-neutral-800">
-
 			<div class="flex justify-center items-center">
 				<UiTabs v-model="index"  :items="items" size="xl" :content="false" :ui="{ root: 'p-1 gap-1', list: 'rounded-none bg-transparent', trigger: 'px-5' }"/>
 			</div>
