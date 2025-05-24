@@ -3,11 +3,13 @@ export default defineNuxtPlugin(() => {
 	const api = useApi()
 	const stateStore = useStateStore()
 
-	const { coords, error, locatedAt } = useGeolocation({ enableHighAccuracy: true, maximumAge: 0 })
+	const { coords, error, locatedAt } = useGeolocation({ enableHighAccuracy: false, maximumAge: 0 })
 
 	setInterval(() => {
 		const lat = coords.value.latitude
 		const lon = coords.value.longitude
+
+		console.debug(lat, lat)
 
 		stateStore.geo = {
 			lat: lat,

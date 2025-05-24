@@ -17,7 +17,7 @@ function handleFound() {
 </script>
 
 <template>
-	<div class="h-screen w-screen bg-neutral-900 flex flex-col justify-center items-center text-white">
+	<div class="h-svh w-screen bg-neutral-900 flex flex-col justify-center items-center text-white">
 
 		<UsernameInput v-if="!stateStore.username"/>
 
