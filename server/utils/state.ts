@@ -19,7 +19,7 @@ export const MAX_HIDER_FOUND_DURATION = 0.5 * 60 * 1000;
 
 export const INITIAL_COIN_COUNT = 50;
 export const QUESTION_COST = 10;
-export const COINT_INCREMENT_INTERVAL = 60 * 1000;
+export const COINT_INCREMENT_INTERVAL = 30 * 1000;
 
 export const SKIP_QUESTION_COST = 35;
 
@@ -108,7 +108,7 @@ export const getMapCircleCost = (type: MapCircleType): number => {
         case MapCircleType.FREEZE_BOMB:
             return 25;
         case MapCircleType.SEEKERS_FORTUNE:
-            return -10;
+            return -20;
     }
 }
 
@@ -489,7 +489,7 @@ export class State {
                     lon: room.positions[userId]?.long ?? 0,
                 }
                 if (getDistance(circlePosition, userPosition) <= circle.radius) {
-                    room.nSeekerCoins += 1;
+                    room.nSeekerCoins += 3;
                 }
             }
         }
