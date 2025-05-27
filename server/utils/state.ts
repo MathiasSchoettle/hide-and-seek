@@ -22,6 +22,7 @@ export const QUESTION_COST = 10;
 export const COINT_INCREMENT_INTERVAL = 30 * 1000;
 
 export const SKIP_QUESTION_COST = 35;
+export const MAX_MAP_CIRCLES = 10;
 
 type Room = {
     id: string,
@@ -117,6 +118,22 @@ export type MapCircle = {
     position: Position,
     radius: number,
     activeUntil: number,
+}
+
+
+const positionGetDistance = (a?: Position, b?: Position): number => {
+    if (a === undefined || b === undefined) {
+        return Infinity;
+    }
+    const aCoor = {
+        lat: a.lat,
+        lon: a.long,
+    }
+    const bCoor = {
+        lat: b.lat,
+        lon: b.long,
+    }
+    return getDistance(aCoor, bCoor);
 }
 
 export class State {
@@ -569,6 +586,16 @@ export class State {
             return;
         }
 
+        for (const circle of room.mapCircles) {
+            if (circle.type !== MapCircleType.SMOKE_BOMB) {
+                continue;
+            }
+            if (positionGetDistance(circle.position, room.positions[user.id]) <= circle.radius) {
+                console.error("You cannot ask a question inside a smoke bomb");
+                return;
+            }
+        }
+
         room.questions.push({ question, answer: undefined });
         room.nSeekerCoins -= QUESTION_COST;
     }
@@ -624,6 +651,11 @@ export class State {
 
         if (room.nHiderCoins < cost) {
             console.error("Not enough coins to add circle " + type);
+            return;
+        }
+
+        if (room.mapCircles.length >= MAX_MAP_CIRCLES) {
+            console.error(`You cannot have more than ${MAX_MAP_CIRCLES} map circles`);
             return;
         }
 
